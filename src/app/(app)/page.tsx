@@ -1,6 +1,6 @@
+import { signOut } from "@/app/login/actions";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
-import { signOut } from "./login/actions";
 
 export default async function Home() {
   let email: string | null = null;

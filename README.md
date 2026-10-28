@@ -40,7 +40,9 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 ## Estructura
 
 - `src/app`: páginas y estilos globales
+- `src/app/(app)`: pantallas con sesión iniciada (inicio/ruleta, `pila` y `pila/nueva`) con el menú inferior
 - `src/app/login`: pantalla de login y acciones (email, Google, salir)
+- `src/components`: menú inferior, fila de libro y avisos
 - `src/app/auth/callback`: vuelta de Google y del mail de confirmación
 - `src/lib/supabase`: clientes de Supabase (navegador, servidor y refresco de sesión)
 - `src/proxy.ts`: refresca la sesión y manda a `/login` a quien no la tenga
