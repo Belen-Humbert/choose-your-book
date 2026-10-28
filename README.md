@@ -52,5 +52,4 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 
 - Pantalla Mi pila (cargar y listar libros)
 - Búsqueda de libros con Google Books para autocompletar portada, páginas y género
-- Filtros y ruleta
 - PWA
