@@ -15,6 +15,7 @@ export default function BuscadorLibros({
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<BookSuggestion[]>([]);
   const [status, setStatus] = useState<Status>("idle");
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
 
   const term = query.trim();
   const active = term.length >= 2;
@@ -31,13 +32,23 @@ export default function BuscadorLibros({
           `/api/libros/buscar?q=${encodeURIComponent(term)}`,
           { signal: controller.signal },
         );
-        if (!response.ok) throw new Error("falló la búsqueda");
-        const data = (await response.json()) as { results: BookSuggestion[] };
-        setResults(data.results);
+        const data = (await response.json()) as {
+          results?: BookSuggestion[];
+          error?: string;
+          detail?: string;
+        };
+        if (!response.ok) {
+          setResults([]);
+          setErrorDetail(data.detail ?? data.error ?? `Error ${response.status}`);
+          setStatus("error");
+          return;
+        }
+        setResults(data.results ?? []);
         setStatus("done");
       } catch (error) {
         if ((error as Error).name === "AbortError") return;
         setResults([]);
+        setErrorDetail("No se pudo conectar con la app.");
         setStatus("error");
       }
     }, 400);
@@ -94,8 +105,16 @@ export default function BuscadorLibros({
       <p aria-live="polite" className="text-xs text-crema-suave">
         {!active && "Elegí un resultado y se completan portada, páginas y género."}
         {active && status === "loading" && "Buscando…"}
-        {active && status === "error" &&
-          "No pudimos buscar ahora. Podés cargar el libro a mano acá abajo."}
+        {active && status === "error" && (
+          <>
+            No pudimos buscar ahora. Podés cargar el libro a mano acá abajo.
+            {errorDetail && (
+              <span className="mt-1 block text-crema-suave/80">
+                Motivo: {errorDetail}
+              </span>
+            )}
+          </>
+        )}
         {active && status === "done" && results.length === 0 &&
           "No encontramos nada. Probá con otro título o cargalo a mano."}
       </p>

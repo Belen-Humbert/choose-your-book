@@ -81,19 +81,41 @@ export async function searchGoogleBooks(query: string): Promise<BookSuggestion[]
     q: query,
     maxResults: "10",
     printType: "books",
-    fields:
-      "items(id,volumeInfo(title,authors,pageCount,categories,imageLinks/thumbnail))",
   });
   if (process.env.GOOGLE_BOOKS_API_KEY) {
     params.set("key", process.env.GOOGLE_BOOKS_API_KEY);
   }
 
-  const response = await fetch(
-    `https://www.googleapis.com/books/v1/volumes?${params.toString()}`,
-    { next: { revalidate: 3600 } },
-  );
+  let response: Response;
+  try {
+    response = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?${params.toString()}`,
+      { next: { revalidate: 3600 } },
+    );
+  } catch (error) {
+    // Falla de red antes de llegar a Google (sin internet, DNS, antivirus, etc.).
+    const cause = (error as { cause?: { code?: string; message?: string } }).cause;
+    throw new Error(
+      `No se pudo conectar con Google Books (${cause?.code ?? cause?.message ?? (error as Error).message})`,
+    );
+  }
+
   if (!response.ok) {
-    throw new Error(`Google Books respondió ${response.status}`);
+    // Google explica el motivo en el cuerpo (cuota, key inválida, API no habilitada…).
+    let reason = "";
+    try {
+      const body = (await response.json()) as {
+        error?: { message?: string; errors?: { reason?: string }[] };
+      };
+      reason = [body.error?.errors?.[0]?.reason, body.error?.message]
+        .filter(Boolean)
+        .join(": ");
+    } catch {
+      // el cuerpo no era JSON; nos quedamos con el código de estado
+    }
+    throw new Error(
+      `Google Books respondió ${response.status}${reason ? ` (${reason})` : ""}`,
+    );
   }
 
   const data = (await response.json()) as { items?: Volume[] };
