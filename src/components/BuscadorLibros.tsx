@@ -16,6 +16,7 @@ export default function BuscadorLibros({
   const [results, setResults] = useState<BookSuggestion[]>([]);
   const [status, setStatus] = useState<Status>("idle");
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
+  const [source, setSource] = useState<"google" | "openlibrary">("google");
 
   const term = query.trim();
   const active = term.length >= 2;
@@ -34,6 +35,7 @@ export default function BuscadorLibros({
         );
         const data = (await response.json()) as {
           results?: BookSuggestion[];
+          source?: "google" | "openlibrary";
           error?: string;
           detail?: string;
         };
@@ -44,6 +46,7 @@ export default function BuscadorLibros({
           return;
         }
         setResults(data.results ?? []);
+        setSource(data.source ?? "google");
         setStatus("done");
       } catch (error) {
         if ((error as Error).name === "AbortError") return;
@@ -117,6 +120,8 @@ export default function BuscadorLibros({
         )}
         {active && status === "done" && results.length === 0 &&
           "No encontramos nada. Probá con otro título o cargalo a mano."}
+        {active && status === "done" && results.length > 0 && source === "openlibrary" &&
+          "Resultados de Open Library. Pueden venir con menos datos (por ejemplo, sin páginas): revisalos antes de guardar."}
       </p>
 
       {active && results.length > 0 && (

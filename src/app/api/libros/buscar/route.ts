@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { searchGoogleBooks } from "@/lib/googleBooks";
+import { searchBooks } from "@/lib/bookSearch";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 
@@ -21,14 +21,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const results = await searchGoogleBooks(query);
-    return NextResponse.json({ results });
+    const { results, source } = await searchBooks(query);
+    return NextResponse.json({ results, source });
   } catch (error) {
     const detail = error instanceof Error ? error.message : "error desconocido";
     // Queda en la terminal donde corre `npm run dev` para poder diagnosticarlo.
     console.error("[buscar libros]", detail);
     return NextResponse.json(
-      { error: "No pudimos buscar en Google Books.", detail },
+      { error: "No pudimos buscar libros ahora.", detail },
       { status: 502 },
     );
   }

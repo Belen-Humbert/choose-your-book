@@ -52,6 +52,8 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 
 Al agregar un libro (`/pila/nueva`) podés buscarlo por título, autor o ISBN. La búsqueda pasa por `/api/libros/buscar` (solo con sesión iniciada) y autocompleta portada, páginas, autor y género. Los géneros de Google se llevan a los de la app en `src/lib/googleBooks.ts`.
 
+Si Google Books falla (cuota, caída, red) o no encuentra nada, la app busca automáticamente en **Open Library** (`src/lib/openLibrary.ts`, sin API key). Esos resultados pueden venir con menos datos, por ejemplo sin páginas, y el buscador lo avisa. Los libros que vienen de Open Library se guardan con un id que empieza con `ol:`.
+
 Funciona sin configurar nada, pero Google limita las búsquedas anónimas. Si ves errores de cuota, creá una API key de Books API en Google Cloud Console y agregala a `.env.local` como `GOOGLE_BOOKS_API_KEY` (también en las variables de entorno del hosting, sin el prefijo `NEXT_PUBLIC_`).
 
 ## Estados de lectura

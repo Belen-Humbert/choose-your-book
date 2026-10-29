@@ -26,7 +26,7 @@ type Volume = {
 // Google Books devuelve categorías en inglés y muy variadas ("Fiction / Romance / General").
 // Las llevamos a los géneros que usa la app. El orden importa: lo más específico primero.
 const GENRE_RULES: [RegExp, Genre][] = [
-  [/romanc/i, "Romance"],
+  [/romanc|love stor/i, "Romance"],
   [/science fiction|sci-fi|ciencia ficci/i, "Ciencia ficción"],
   [/fantas/i, "Fantasía"],
   [/mystery|thriller|detective|crime|suspense|misterio|policial/i, "Misterio"],
@@ -90,7 +90,8 @@ export async function searchGoogleBooks(query: string): Promise<BookSuggestion[]
   try {
     response = await fetch(
       `https://www.googleapis.com/books/v1/volumes?${params.toString()}`,
-      { next: { revalidate: 3600 } },
+      // Si Google tarda demasiado, cortamos y pasamos al respaldo.
+      { signal: AbortSignal.timeout(8000), next: { revalidate: 3600 } },
     );
   } catch (error) {
     // Falla de red antes de llegar a Google (sin internet, DNS, antivirus, etc.).
