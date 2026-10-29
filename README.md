@@ -18,7 +18,7 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 
 2. Creá un proyecto en [Supabase](https://supabase.com) y copiá `.env.example` a `.env.local` con la URL y la publishable key del proyecto.
 
-3. Corré el SQL de `supabase/migrations/0001_books.sql` en el SQL Editor de Supabase para crear la tabla `books`.
+3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`) y el de `supabase/migrations/0002_covers.sql` (crea el espacio para las portadas que se suben) en el SQL Editor de Supabase.
 
 4. Levantá la app:
 
@@ -55,6 +55,12 @@ Al agregar un libro (`/pila/nueva`) podés buscarlo por título, autor o ISBN. L
 Si Google Books falla (cuota, caída, red) o no encuentra nada, la app busca automáticamente en **Open Library** (`src/lib/openLibrary.ts`, sin API key). Esos resultados pueden venir con menos datos, por ejemplo sin páginas, y el buscador lo avisa. Los libros que vienen de Open Library se guardan con un id que empieza con `ol:`.
 
 Funciona sin configurar nada, pero Google limita las búsquedas anónimas. Si ves errores de cuota, creá una API key de Books API en Google Cloud Console y agregala a `.env.local` como `GOOGLE_BOOKS_API_KEY` (también en las variables de entorno del hosting, sin el prefijo `NEXT_PUBLIC_`).
+
+## Portadas propias
+
+Al agregar un libro se puede subir la portada desde el dispositivo (galería, archivos o la cámara del celu). La imagen se achica en el navegador (máximo 900 px de lado, WebP o JPEG) y se guarda en Supabase Storage, en el bucket público `covers`, dentro de una carpeta con el id de cada usuario. Cada persona solo puede subir, ver y borrar en su carpeta. Se puede reemplazar la portada que trae la búsqueda por una propia. Al quitar un libro se borra también su imagen subida.
+
+Requiere haber corrido `supabase/migrations/0002_covers.sql`. Si no, la app avisa que falta crear el espacio de portadas.
 
 ## Estados de lectura
 

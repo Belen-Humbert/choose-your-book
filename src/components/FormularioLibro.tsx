@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { addBook } from "@/app/(app)/pila/actions";
 import { GENRES } from "@/lib/genres";
 import type { BookSuggestion } from "@/lib/googleBooks";
 import BuscadorLibros from "./BuscadorLibros";
+import SubirPortada from "./SubirPortada";
 
 const fieldClass =
   "h-12 w-full rounded-xl border-0 bg-crema px-4 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza";
@@ -20,6 +20,7 @@ export default function FormularioLibro() {
   const [pages, setPages] = useState("");
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const [googleBooksId, setGoogleBooksId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   function applySuggestion(suggestion: BookSuggestion) {
     setTitle(suggestion.title);
@@ -55,18 +56,8 @@ export default function FormularioLibro() {
 
         {googleBooksId && (
           <div className="flex items-center gap-3 rounded-xl border border-petroleo bg-petroleo/25 p-2.5">
-            {coverUrl && (
-              <Image
-                src={coverUrl}
-                alt=""
-                width={40}
-                height={58}
-                unoptimized
-                className="h-[58px] w-10 shrink-0 rounded-sm object-cover"
-              />
-            )}
             <p className="min-w-0 flex-1 text-sm text-crema">
-              Elegido de Google Books. Podés corregir lo que quieras.
+              Libro elegido de la búsqueda. Podés corregir lo que quieras.
             </p>
             <button
               type="button"
@@ -77,6 +68,12 @@ export default function FormularioLibro() {
             </button>
           </div>
         )}
+
+        <SubirPortada
+          coverUrl={coverUrl}
+          onChange={setCoverUrl}
+          onUploadingChange={setUploading}
+        />
 
         <label className={labelClass}>
           Título
@@ -156,9 +153,10 @@ export default function FormularioLibro() {
 
         <button
           type="submit"
-          className="mt-1 h-[60px] cursor-pointer rounded-2xl bg-mostaza text-lg font-bold text-tinta shadow-[0_4px_0_#9a6f10] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema"
+          disabled={uploading}
+          className="mt-1 h-[60px] cursor-pointer rounded-2xl bg-mostaza text-lg font-bold text-tinta shadow-[0_4px_0_#9a6f10] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Agregar a mi pila
+          {uploading ? "Subiendo portada…" : "Agregar a mi pila"}
         </button>
 
         <Link

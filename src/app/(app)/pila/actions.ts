@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { COVERS_BUCKET, coverStoragePath } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
 import type { BookStatus } from "@/lib/types";
 
@@ -66,7 +67,18 @@ export async function deleteBook(formData: FormData) {
   if (!id) return;
 
   const supabase = await createClient();
-  await supabase.from("books").delete().eq("id", id);
+  const { data: book } = await supabase
+    .from("books")
+    .select("cover_url")
+    .eq("id", id)
+    .maybeSingle();
+  const { error } = await supabase.from("books").delete().eq("id", id);
+
+  // Si la portada la subió la persona, borramos también el archivo para no dejarlo suelto.
+  const path = coverStoragePath(book?.cover_url);
+  if (!error && path) {
+    await supabase.storage.from(COVERS_BUCKET).remove([path]);
+  }
 
   revalidatePath("/pila");
   revalidatePath("/");
