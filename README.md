@@ -48,8 +48,19 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 - `src/proxy.ts`: refresca la sesión y manda a `/login` a quien no la tenga
 - `supabase/migrations`: esquema de la base de datos
 
+## Búsqueda con Google Books
+
+Al agregar un libro (`/pila/nueva`) podés buscarlo por título, autor o ISBN. La búsqueda pasa por `/api/libros/buscar` (solo con sesión iniciada) y autocompleta portada, páginas, autor y género. Los géneros de Google se llevan a los de la app en `src/lib/googleBooks.ts`.
+
+Funciona sin configurar nada, pero Google limita las búsquedas anónimas. Si ves errores de cuota, creá una API key de Books API en Google Cloud Console y agregala a `.env.local` como `GOOGLE_BOOKS_API_KEY` (también en las variables de entorno del hosting, sin el prefijo `NEXT_PUBLIC_`).
+
+## Estados de lectura
+
+Cada libro está en "Por leer", "Leyendo" o "Leído". Se cambia desde Mi pila o con el botón "Empezar a leer" de la ruleta. Lo que estás leyendo aparece arriba en el inicio, y la ruleta solo sortea entre los "Por leer".
+
 ## Próximos pasos
 
-- Pantalla Mi pila (cargar y listar libros)
-- Búsqueda de libros con Google Books para autocompletar portada, páginas y género
+- Importar listas desde un CSV (Goodreads, o Fable con una extensión de terceros)
+- Editar un libro ya cargado
 - PWA
+- Publicar en Vercel

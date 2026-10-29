@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { setStatus } from "@/app/(app)/pila/actions";
 import { coverColors } from "@/lib/covers";
 import type { Book } from "@/lib/types";
+import BookCover from "./BookCover";
 
 type Formato = "todos" | "digital" | "fisico";
 
@@ -141,7 +143,6 @@ export default function Ruleta({ books }: { books: Book[] }) {
     );
   }
 
-  const winnerColors = winner ? coverColors(winner.id) : null;
   const winnerMeta = winner
     ? [winner.genre, winner.pages ? `${winner.pages} págs` : null]
         .filter(Boolean)
@@ -302,22 +303,9 @@ export default function Ruleta({ books }: { books: Book[] }) {
       </button>
 
       <div aria-live="polite">
-        {winner && winnerColors ? (
+        {winner ? (
           <section className="flex gap-3.5 rounded-[18px] bg-crema p-3.5 text-tinta">
-            <div
-              aria-hidden="true"
-              className="flex h-[124px] w-[84px] shrink-0 flex-col justify-between rounded-l-[4px] rounded-r-lg p-2 shadow-[inset_4px_0_0_rgba(0,0,0,0.25)]"
-              style={{ backgroundColor: winnerColors.bg, color: winnerColors.ink }}
-            >
-              <span className="line-clamp-4 font-display text-sm font-extrabold uppercase leading-[1.05]">
-                {winner.title}
-              </span>
-              {winner.author && (
-                <span className="line-clamp-2 text-[9px] uppercase tracking-[0.08em]">
-                  {winner.author}
-                </span>
-              )}
-            </div>
+            <BookCover book={winner} variant="winner" />
             <div className="flex min-w-0 flex-col justify-center gap-1.5">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#8a3a1c]">
                 Te toca
@@ -335,6 +323,17 @@ export default function Ruleta({ books }: { books: Book[] }) {
                   .join(" y ")}
                 {winnerMeta ? ` · ${winnerMeta}` : ""}
               </p>
+              <form action={setStatus} className="mt-1">
+                <input type="hidden" name="id" value={winner.id} />
+                <input type="hidden" name="status" value="leyendo" />
+                <input type="hidden" name="ir" value="leyendo" />
+                <button
+                  type="submit"
+                  className="h-11 cursor-pointer rounded-full bg-tinta px-4 text-sm font-bold text-crema focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tinta"
+                >
+                  Empezar a leer
+                </button>
+              </form>
             </div>
           </section>
         ) : matches.length === 0 ? (

@@ -1,24 +1,25 @@
-import { deleteBook } from "@/app/(app)/pila/actions";
-import { coverColors } from "@/lib/covers";
-import type { Book } from "@/lib/types";
+import { deleteBook, setStatus } from "@/app/(app)/pila/actions";
+import type { Book, BookStatus } from "@/lib/types";
+import BookCover from "./BookCover";
+
+// Qué botones de estado se ofrecen según dónde está el libro.
+const STATUS_ACTIONS: Record<BookStatus, { label: string; to: BookStatus }[]> = {
+  pendiente: [{ label: "Empezar a leer", to: "leyendo" }],
+  leyendo: [
+    { label: "Lo terminé", to: "leido" },
+    { label: "Volver a la pila", to: "pendiente" },
+  ],
+  leido: [{ label: "Volver a la pila", to: "pendiente" }],
+};
 
 export default function BookRow({ book }: { book: Book }) {
-  const colors = coverColors(book.id);
   const meta = [book.genre, book.pages ? `${book.pages} págs` : null]
     .filter(Boolean)
     .join(" · ");
 
   return (
-    <li className="flex items-center gap-3 rounded-[14px] border border-borde bg-panel py-2.5 pl-2.5 pr-1.5">
-      <div
-        aria-hidden="true"
-        className="flex h-[76px] w-[52px] shrink-0 items-end rounded-l-[3px] rounded-r-md p-1.5 shadow-[inset_3px_0_0_rgba(0,0,0,0.25)]"
-        style={{ backgroundColor: colors.bg, color: colors.ink }}
-      >
-        <span className="line-clamp-4 font-display text-[8px] font-extrabold uppercase leading-[1.05]">
-          {book.title}
-        </span>
-      </div>
+    <li className="flex items-start gap-3 rounded-[14px] border border-borde bg-panel py-2.5 pl-2.5 pr-1.5">
+      <BookCover book={book} variant="row" />
 
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <p className="font-display text-[17px] font-extrabold leading-[1.1] text-crema">
@@ -39,6 +40,25 @@ export default function BookRow({ book }: { book: Book }) {
             </span>
           )}
           {meta && <span className="text-xs text-crema-suave">{meta}</span>}
+        </div>
+
+        <div className="mt-1.5 flex flex-wrap gap-2">
+          {STATUS_ACTIONS[book.status].map((action) => (
+            <form key={action.to} action={setStatus}>
+              <input type="hidden" name="id" value={book.id} />
+              <input type="hidden" name="status" value={action.to} />
+              <button
+                type="submit"
+                className={`h-11 cursor-pointer rounded-full border-[1.5px] px-3.5 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza ${
+                  action.to === "pendiente"
+                    ? "border-borde font-medium text-crema-suave"
+                    : "border-mostaza bg-mostaza font-bold text-tinta"
+                }`}
+              >
+                {action.label}
+              </button>
+            </form>
+          ))}
         </div>
       </div>
 

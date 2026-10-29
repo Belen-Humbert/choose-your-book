@@ -1,4 +1,5 @@
 import { signOut } from "@/app/login/actions";
+import LeyendoAhora from "@/components/LeyendoAhora";
 import Ruleta from "@/components/Ruleta";
 import SupabaseMissing from "@/components/SupabaseMissing";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -16,13 +17,16 @@ export default async function Home() {
     supabase
       .from("books")
       .select("*")
-      .eq("status", "pendiente")
+      .in("status", ["pendiente", "leyendo"])
       .order("created_at", { ascending: false }),
   ]);
 
   const claimEmail = claimsData?.claims?.email;
   const email = typeof claimEmail === "string" ? claimEmail : null;
   const books = (booksData ?? []) as Book[];
+  // La ruleta solo sortea entre lo pendiente; lo que ya estás leyendo va aparte.
+  const pendientes = books.filter((book) => book.status === "pendiente");
+  const leyendo = books.filter((book) => book.status === "leyendo");
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-5 py-6">
@@ -47,6 +51,8 @@ export default async function Home() {
         </h1>
       </div>
 
+      <LeyendoAhora books={leyendo} />
+
       {error ? (
         <p
           role="alert"
@@ -55,7 +61,7 @@ export default async function Home() {
           No pudimos cargar tu pila. Probá de nuevo en un rato.
         </p>
       ) : (
-        <Ruleta books={books} />
+        <Ruleta books={pendientes} />
       )}
     </main>
   );

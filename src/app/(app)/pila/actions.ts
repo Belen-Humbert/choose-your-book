@@ -3,9 +3,21 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import type { BookStatus } from "@/lib/types";
 
 function backToForm(message: string): never {
   redirect(`/pila/nueva?error=${encodeURIComponent(message)}`);
+}
+
+// Solo aceptamos portadas con https; cualquier otra cosa se descarta.
+function cleanCoverUrl(value: FormDataEntryValue | null): string | null {
+  const text = String(value ?? "").trim();
+  if (!text || text.length > 500) return null;
+  try {
+    return new URL(text).protocol === "https:" ? text : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function addBook(formData: FormData) {
@@ -13,6 +25,7 @@ export async function addBook(formData: FormData) {
   const author = String(formData.get("author") ?? "").trim();
   const genre = String(formData.get("genre") ?? "").trim();
   const pages = Number.parseInt(String(formData.get("pages") ?? ""), 10);
+  const googleBooksId = String(formData.get("google_books_id") ?? "").trim();
   const hasDigital = formData.get("digital") === "on";
   const hasPhysical = formData.get("fisico") === "on";
 
@@ -29,14 +42,22 @@ export async function addBook(formData: FormData) {
     author: author || null,
     genre: genre || null,
     pages: Number.isFinite(pages) && pages > 0 ? pages : null,
+    cover_url: cleanCoverUrl(formData.get("cover_url")),
+    google_books_id: googleBooksId && googleBooksId.length <= 50 ? googleBooksId : null,
     has_digital: hasDigital,
     has_physical: hasPhysical,
   });
   if (error) {
-    backToForm("No pudimos guardar el libro. Probá de nuevo.");
+    // 23505: el índice único (usuario + libro de Google Books) ya tiene este libro.
+    backToForm(
+      error.code === "23505"
+        ? "Ese libro ya está en tu pila."
+        : "No pudimos guardar el libro. Probá de nuevo.",
+    );
   }
 
   revalidatePath("/pila");
+  revalidatePath("/");
   redirect("/pila");
 }
 
@@ -48,4 +69,25 @@ export async function deleteBook(formData: FormData) {
   await supabase.from("books").delete().eq("id", id);
 
   revalidatePath("/pila");
+  revalidatePath("/");
+}
+
+const STATUSES: BookStatus[] = ["pendiente", "leyendo", "leido"];
+
+// Cambia el estado de lectura de un libro (por leer → leyendo → leído).
+export async function setStatus(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "") as BookStatus;
+  if (!id || !STATUSES.includes(status)) return;
+
+  const supabase = await createClient();
+  await supabase.from("books").update({ status }).eq("id", id);
+
+  revalidatePath("/pila");
+  revalidatePath("/");
+
+  // Desde la ruleta, al empezar a leer te llevamos a la lista de "Leyendo".
+  if (formData.get("ir") === "leyendo") {
+    redirect("/pila?estado=leyendo");
+  }
 }
