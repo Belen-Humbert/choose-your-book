@@ -9,7 +9,8 @@ type CoverBook = {
 };
 
 const SIZES = {
-  row: { box: "h-[76px] w-[52px]", w: 52, h: 76, title: "text-[8px]" },
+  // En la lista la tapa es chica: letra más chica y menos margen para que entren las palabras largas.
+  row: { box: "h-[76px] w-[52px]", w: 52, h: 76, title: "text-[7px] tracking-tight" },
   winner: { box: "h-[124px] w-[84px]", w: 84, h: 124, title: "text-sm" },
 } as const;
 
@@ -41,7 +42,9 @@ export default function BookCover({
   return (
     <div
       aria-hidden="true"
-      className={`${size.box} flex shrink-0 flex-col justify-between rounded-l-[3px] rounded-r-md p-1.5 shadow-[inset_3px_0_0_rgba(0,0,0,0.25)]`}
+      className={`${size.box} flex shrink-0 flex-col justify-between overflow-hidden rounded-l-[3px] rounded-r-md shadow-[inset_3px_0_0_rgba(0,0,0,0.25)] ${
+        variant === "row" ? "py-1.5 pl-2 pr-1" : "p-1.5"
+      }`}
       style={{ backgroundColor: colors.bg, color: colors.ink }}
     >
       <span
