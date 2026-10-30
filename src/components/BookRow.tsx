@@ -1,6 +1,7 @@
 import { deleteBook, setStatus } from "@/app/(app)/pila/actions";
 import type { Book, BookStatus } from "@/lib/types";
 import BookCover from "./BookCover";
+import ProgresoLectura from "./ProgresoLectura";
 
 // Qué botones de estado se ofrecen según dónde está el libro.
 const STATUS_ACTIONS: Record<BookStatus, { label: string; to: BookStatus }[]> = {
@@ -41,6 +42,8 @@ export default function BookRow({ book }: { book: Book }) {
           )}
           {meta && <span className="text-xs text-crema-suave">{meta}</span>}
         </div>
+
+        {book.status === "leyendo" && <ProgresoLectura book={book} />}
 
         <div className="mt-1.5 flex flex-wrap gap-2">
           {STATUS_ACTIONS[book.status].map((action) => (

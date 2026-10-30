@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Book } from "@/lib/types";
 import BookCover from "./BookCover";
+import ProgresoLectura from "./ProgresoLectura";
 
 // Atajo en el inicio para no perder de vista lo que estás leyendo.
 export default function LeyendoAhora({ books }: { books: Book[] }) {
@@ -26,13 +27,14 @@ export default function LeyendoAhora({ books }: { books: Book[] }) {
         {books.slice(0, 3).map((book) => (
           <li key={book.id} className="flex items-center gap-3">
             <BookCover book={book} variant="row" />
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="font-display text-base font-extrabold leading-tight text-crema">
                 {book.title}
               </p>
               {book.author && (
                 <p className="text-[13px] text-crema-suave">{book.author}</p>
               )}
+              <ProgresoLectura book={book} compact />
             </div>
           </li>
         ))}

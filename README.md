@@ -18,7 +18,7 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 
 2. Creá un proyecto en [Supabase](https://supabase.com) y copiá `.env.example` a `.env.local` con la URL y la publishable key del proyecto.
 
-3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`) y el de `supabase/migrations/0002_covers.sql` (crea el espacio para las portadas que se suben) en el SQL Editor de Supabase.
+3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`), `0002_covers.sql` (el espacio para las portadas que se suben) y `0003_progress.sql` (la página por la que va cada libro) en el SQL Editor de Supabase. Hay que pegar el contenido de cada archivo, no su nombre.
 
 4. Levantá la app:
 
@@ -65,6 +65,10 @@ Requiere haber corrido `supabase/migrations/0002_covers.sql`. Si no, la app avis
 ## Estados de lectura
 
 Cada libro está en "Por leer", "Leyendo" o "Leído". Se cambia desde Mi pila o con el botón "Empezar a leer" de la ruleta. Lo que estás leyendo aparece arriba en el inicio, y la ruleta solo sortea entre los "Por leer".
+
+## Progreso de lectura
+
+Los libros que estás leyendo muestran una barra con la página actual y el porcentaje. Se actualiza desde Mi pila con "Página actual" y "Guardar progreso" (no deja pasar del total de páginas), y en el inicio se ve resumido. Si el libro no tiene el total de páginas cargado, se guarda la página pero no hay barra. Al tocar "Lo terminé", el progreso queda al 100%. Requiere `supabase/migrations/0003_progress.sql`.
 
 ## Próximos pasos
 

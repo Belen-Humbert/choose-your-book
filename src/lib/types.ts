@@ -8,6 +8,7 @@ export type Book = {
   author: string | null;
   genre: string | null;
   pages: number | null;
+  current_page: number; // página por la que va (0 si todavía no empezó)
   cover_url: string | null;
   google_books_id: string | null;
   has_digital: boolean;

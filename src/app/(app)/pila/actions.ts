@@ -84,6 +84,27 @@ export async function deleteBook(formData: FormData) {
   revalidatePath("/");
 }
 
+// Guarda la página por la que va el libro. Nunca pasa del total si lo conocemos.
+export async function setProgress(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const raw = Number.parseInt(String(formData.get("page") ?? ""), 10);
+  if (!id || !Number.isFinite(raw) || raw < 0) return;
+
+  const supabase = await createClient();
+  const { data: book } = await supabase
+    .from("books")
+    .select("pages")
+    .eq("id", id)
+    .maybeSingle();
+  if (!book) return;
+
+  const page = Math.min(raw, book.pages ?? 10000);
+  await supabase.from("books").update({ current_page: page }).eq("id", id);
+
+  revalidatePath("/pila");
+  revalidatePath("/");
+}
+
 const STATUSES: BookStatus[] = ["pendiente", "leyendo", "leido"];
 
 // Cambia el estado de lectura de un libro (por leer → leyendo → leído).
@@ -93,7 +114,19 @@ export async function setStatus(formData: FormData) {
   if (!id || !STATUSES.includes(status)) return;
 
   const supabase = await createClient();
-  await supabase.from("books").update({ status }).eq("id", id);
+  const changes: { status: BookStatus; current_page?: number } = { status };
+
+  // Al terminar un libro, el progreso queda completo (si sabemos cuántas páginas tiene).
+  if (status === "leido") {
+    const { data: book } = await supabase
+      .from("books")
+      .select("pages")
+      .eq("id", id)
+      .maybeSingle();
+    if (book?.pages) changes.current_page = book.pages;
+  }
+
+  await supabase.from("books").update(changes).eq("id", id);
 
   revalidatePath("/pila");
   revalidatePath("/");
