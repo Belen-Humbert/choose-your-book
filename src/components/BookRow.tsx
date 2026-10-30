@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { deleteBook, setStatus } from "@/app/(app)/pila/actions";
 import type { Book, BookStatus } from "@/lib/types";
 import BookCover from "./BookCover";
@@ -21,29 +22,51 @@ export default function BookRow({ book }: { book: Book }) {
   return (
     <li className="flex flex-col gap-3 rounded-[14px] border border-borde bg-panel p-2.5">
       <div className="flex items-start gap-3">
-        <BookCover book={book} variant="row" />
+        {/* Tocar el libro abre su detalle, con las notas */}
+        <Link
+          href={`/pila/${book.id}`}
+          className="flex min-w-0 flex-1 items-start gap-3 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+        >
+          <BookCover book={book} variant="row" />
 
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <p className="font-display text-[17px] font-extrabold leading-[1.1] text-crema">
-            {book.title}
-          </p>
-          {book.author && (
-            <p className="text-[13px] text-crema-suave">{book.author}</p>
-          )}
-          <div className="mt-1 flex flex-wrap items-center gap-2">
-            {book.has_digital && (
-              <span className="rounded-[10px] bg-petroleo px-2.5 py-0.5 text-xs font-bold text-crema">
-                Digital
-              </span>
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <p className="font-display text-[17px] font-extrabold leading-[1.1] text-crema">
+              {book.title}
+            </p>
+            {book.author && (
+              <p className="text-[13px] text-crema-suave">{book.author}</p>
             )}
-            {book.has_physical && (
-              <span className="rounded-[10px] bg-mostaza px-2.5 py-0.5 text-xs font-bold text-tinta">
-                Físico
-              </span>
-            )}
-            {meta && <span className="text-xs text-crema-suave">{meta}</span>}
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              {book.has_digital && (
+                <span className="rounded-[10px] bg-petroleo px-2.5 py-0.5 text-xs font-bold text-crema">
+                  Digital
+                </span>
+              )}
+              {book.has_physical && (
+                <span className="rounded-[10px] bg-mostaza px-2.5 py-0.5 text-xs font-bold text-tinta">
+                  Físico
+                </span>
+              )}
+              {meta && <span className="text-xs text-crema-suave">{meta}</span>}
+            </div>
+            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-bold text-mostaza">
+              Ver notas
+              <svg
+                aria-hidden="true"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
           </div>
-        </div>
+        </Link>
 
         <form action={deleteBook}>
           <input type="hidden" name="id" value={book.id} />

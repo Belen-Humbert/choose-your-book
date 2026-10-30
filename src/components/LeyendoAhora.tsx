@@ -25,17 +25,22 @@ export default function LeyendoAhora({ books }: { books: Book[] }) {
       </div>
       <ul className="flex flex-col gap-2.5">
         {books.slice(0, 3).map((book) => (
-          <li key={book.id} className="flex items-center gap-3">
-            <BookCover book={book} variant="row" />
-            <div className="min-w-0 flex-1">
-              <p className="font-display text-base font-extrabold leading-tight text-crema">
-                {book.title}
-              </p>
-              {book.author && (
-                <p className="text-[13px] text-crema-suave">{book.author}</p>
-              )}
-              <ProgresoLectura book={book} compact />
-            </div>
+          <li key={book.id}>
+            <Link
+              href={`/pila/${book.id}`}
+              className="flex items-center gap-3 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+            >
+              <BookCover book={book} variant="row" />
+              <div className="min-w-0 flex-1">
+                <p className="font-display text-base font-extrabold leading-tight text-crema">
+                  {book.title}
+                </p>
+                {book.author && (
+                  <p className="text-[13px] text-crema-suave">{book.author}</p>
+                )}
+                <ProgresoLectura book={book} compact />
+              </div>
+            </Link>
           </li>
         ))}
       </ul>

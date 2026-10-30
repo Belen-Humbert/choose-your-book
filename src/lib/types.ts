@@ -1,3 +1,13 @@
+// Una fila de la tabla `book_notes` (ver supabase/migrations/0004_notes.sql).
+export type BookNote = {
+  id: string;
+  book_id: string;
+  user_id: string;
+  body: string;
+  page: number | null; // página en la que ibas al escribirla
+  created_at: string; // fecha y hora en UTC (ISO)
+};
+
 export type BookStatus = "pendiente" | "leyendo" | "leido";
 
 // Una fila de la tabla `books` (ver supabase/migrations/0001_books.sql).

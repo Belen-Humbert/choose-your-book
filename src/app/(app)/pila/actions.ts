@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { isUuid } from "@/lib/ids";
 import { COVERS_BUCKET, coverStoragePath } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
 import type { BookStatus } from "@/lib/types";
@@ -102,6 +103,7 @@ export async function setProgress(formData: FormData) {
   await supabase.from("books").update({ current_page: page }).eq("id", id);
 
   revalidatePath("/pila");
+  revalidatePath("/pila/[id]", "page");
   revalidatePath("/");
 }
 
@@ -129,10 +131,53 @@ export async function setStatus(formData: FormData) {
   await supabase.from("books").update(changes).eq("id", id);
 
   revalidatePath("/pila");
+  revalidatePath("/pila/[id]", "page");
   revalidatePath("/");
 
   // Desde la ruleta, al empezar a leer te llevamos a la lista de "Leyendo".
   if (formData.get("ir") === "leyendo") {
     redirect("/pila?estado=leyendo");
   }
+}
+
+function backToBook(bookId: string, message: string): never {
+  redirect(`/pila/${bookId}?error=${encodeURIComponent(message)}`);
+}
+
+// Guarda una nota del libro. La fecha y la hora las pone la base de datos; la página es
+// la que tenía el libro en ese momento.
+export async function addNote(formData: FormData) {
+  const bookId = String(formData.get("book_id") ?? "");
+  const body = String(formData.get("body") ?? "").trim().slice(0, 2000);
+  if (!isUuid(bookId) || !body) return;
+
+  const supabase = await createClient();
+  const { data: book } = await supabase
+    .from("books")
+    .select("current_page")
+    .eq("id", bookId)
+    .maybeSingle();
+  if (!book) return;
+
+  const { error } = await supabase.from("book_notes").insert({
+    book_id: bookId,
+    body,
+    page: book.current_page > 0 ? book.current_page : null,
+  });
+  if (error) {
+    backToBook(bookId, "No pudimos guardar la nota. Probá de nuevo.");
+  }
+
+  revalidatePath(`/pila/${bookId}`);
+}
+
+export async function deleteNote(formData: FormData) {
+  const noteId = String(formData.get("note_id") ?? "");
+  const bookId = String(formData.get("book_id") ?? "");
+  if (!isUuid(noteId) || !isUuid(bookId)) return;
+
+  const supabase = await createClient();
+  await supabase.from("book_notes").delete().eq("id", noteId);
+
+  revalidatePath(`/pila/${bookId}`);
 }
