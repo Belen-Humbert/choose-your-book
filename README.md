@@ -68,7 +68,7 @@ Cada libro está en "Por leer", "Leyendo" o "Leído". Se cambia desde Mi pila o 
 
 ## Importar desde Goodreads
 
-Desde "Sumá un libro" → "¿Ya tenés una lista en Goodreads? Importala" (`/pila/importar`) se sube el CSV que Goodreads genera en Mis libros → Importar y exportar. Se puede importar solo "quiero leer" o todo (los estantes `to-read`, `currently-reading` y `read` pasan a Por leer, Leyendo y Leídos). Los "Kindle Edition" y similares quedan como digital; si el archivo no dice el formato, se usa el que elijas. Los libros que ya están en la pila (mismo título y autor) se saltean. Límite: 2 MB y 1000 libros. No necesita migración nueva.
+Desde "Sumá un libro" → "¿Ya tenés una lista en Goodreads? Importala" (`/pila/importar`) se sube el CSV que Goodreads genera en Mis libros → Importación/Exportación. Se puede importar solo "quiero leer" o todo (los estantes `to-read`, `currently-reading` y `read` pasan a Por leer, Leyendo y Leídos). Los "Kindle Edition" y similares quedan como digital; si el archivo no dice el formato, se usa el que elijas. Los libros que ya están en la pila (mismo título y autor) se saltean. Límite: 2 MB y 1000 libros. No necesita migración nueva.
 
 ## Progreso de lectura
 

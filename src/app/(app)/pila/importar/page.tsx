@@ -35,7 +35,7 @@ export default async function ImportarPage({
 
       <ol className="list-decimal space-y-1 pl-5 text-sm text-crema-suave">
         <li>En Goodreads entrá a “Mis libros” → “Importar y exportar”.</li>
-        <li>Tocá “Exportar biblioteca” y descargá el archivo CSV.</li>
+        <li>Tocá “Biblioteca de exportación” y, cuando esté listo, descargá el archivo CSV (trae todos tus libros juntos: la app los separa sola).</li>
         <li>Subilo acá. Los libros que ya tenés se saltean.</li>
       </ol>
 
