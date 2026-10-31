@@ -1,3 +1,4 @@
+import Link from "next/link";
 import FormularioLibro from "@/components/FormularioLibro";
 import SupabaseMissing from "@/components/SupabaseMissing";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -34,6 +35,13 @@ export default async function NuevaPage({
       )}
 
       <FormularioLibro />
+
+      <Link
+        href="/pila/importar"
+        className="inline-flex min-h-11 items-center self-start text-sm font-bold text-mostaza underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+      >
+        ¿Ya tenés una lista en Goodreads? Importala
+      </Link>
     </main>
   );
 }

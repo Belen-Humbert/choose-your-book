@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { bookKey, parseGoodreadsExport } from "@/lib/goodreadsCsv";
 import { isUuid } from "@/lib/ids";
 import { NOTE_MAX_LENGTH } from "@/lib/notes";
 import { bookPercent, pageFromPercent, progressPercent } from "@/lib/progress";
@@ -225,4 +226,87 @@ export async function deleteNote(formData: FormData) {
   await supabase.from("book_notes").delete().eq("id", noteId);
 
   revalidatePath(`/pila/${bookId}`);
+}
+
+const IMPORT_MAX_BYTES = 2 * 1024 * 1024;
+const IMPORT_MAX_BOOKS = 1000;
+
+function backToImport(message: string): never {
+  redirect(`/pila/importar?error=${encodeURIComponent(message)}`);
+}
+
+// Importa un export CSV de Goodreads. Salta los libros que ya están en la pila.
+export async function importGoodreads(formData: FormData) {
+  const file = formData.get("archivo");
+  const only = String(formData.get("que") ?? "por-leer");
+  const defaultFormat = String(formData.get("formato") ?? "fisico");
+
+  if (!(file instanceof File) || file.size === 0) {
+    backToImport("Elegí el archivo CSV que descargaste de Goodreads.");
+  }
+  if (file.size > IMPORT_MAX_BYTES) {
+    backToImport("El archivo es demasiado grande (máximo 2 MB).");
+  }
+
+  const parsed = parseGoodreadsExport(await file.text());
+  if (!parsed) {
+    backToImport(
+      "Ese archivo no parece un export de Goodreads. Tiene que ser el CSV de “Importar y exportar”.",
+    );
+  }
+
+  const wanted = parsed.filter((b) => only === "todo" || b.status === "pendiente");
+  if (wanted.length === 0) {
+    backToImport("No encontramos libros para importar en ese archivo.");
+  }
+  if (wanted.length > IMPORT_MAX_BOOKS) {
+    backToImport(`El archivo tiene más de ${IMPORT_MAX_BOOKS} libros. Dividilo y subilo en partes.`);
+  }
+
+  const supabase = await createClient();
+  const { data: existing, error: readError } = await supabase
+    .from("books")
+    .select("title, author");
+  if (readError) {
+    backToImport("No pudimos revisar tu pila. Probá de nuevo.");
+  }
+  const seen = new Set((existing ?? []).map((b) => bookKey(b.title, b.author)));
+
+  const rows = [];
+  let repeated = 0;
+  for (const b of wanted) {
+    const key = bookKey(b.title, b.author);
+    if (seen.has(key)) {
+      repeated++;
+      continue;
+    }
+    seen.add(key);
+    const format = b.format ?? (defaultFormat === "digital" ? "digital" : "fisico");
+    const done = b.status === "leido" && b.pages;
+    rows.push({
+      title: b.title,
+      author: b.author,
+      pages: b.pages,
+      status: b.status,
+      has_digital: format === "digital",
+      has_physical: format === "fisico",
+      current_page: done ? b.pages : 0,
+      current_percent: done ? 100 : null,
+    });
+  }
+
+  for (let i = 0; i < rows.length; i += 200) {
+    const { error } = await supabase.from("books").insert(rows.slice(i, i + 200));
+    if (error) {
+      backToImport(
+        i > 0
+          ? `Se importaron ${i} libros, pero falló el resto. Volvé a subir el archivo: los repetidos se saltean.`
+          : "No pudimos guardar los libros. Probá de nuevo.",
+      );
+    }
+  }
+
+  revalidatePath("/pila");
+  revalidatePath("/");
+  redirect(`/pila?importados=${rows.length}&repetidos=${repeated}`);
 }

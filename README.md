@@ -66,6 +66,10 @@ Requiere haber corrido `supabase/migrations/0002_covers.sql`. Si no, la app avis
 
 Cada libro está en "Por leer", "Leyendo" o "Leído". Se cambia desde Mi pila o con el botón "Empezar a leer" de la ruleta. Lo que estás leyendo aparece arriba en el inicio, y la ruleta solo sortea entre los "Por leer".
 
+## Importar desde Goodreads
+
+Desde "Sumá un libro" → "¿Ya tenés una lista en Goodreads? Importala" (`/pila/importar`) se sube el CSV que Goodreads genera en Mis libros → Importar y exportar. Se puede importar solo "quiero leer" o todo (los estantes `to-read`, `currently-reading` y `read` pasan a Por leer, Leyendo y Leídos). Los "Kindle Edition" y similares quedan como digital; si el archivo no dice el formato, se usa el que elijas. Los libros que ya están en la pila (mismo título y autor) se saltean. Límite: 2 MB y 1000 libros. No necesita migración nueva.
+
 ## Progreso de lectura
 
 Los libros que estás leyendo muestran una barra con la página actual y el porcentaje. El botón **Actualizar progreso** abre un panel como el de Goodreads: "Voy por la página [__] de N" o "Voy por el [__] %" (selector `#` / `%`, porque los lectores digitales muestran porcentaje), con una nota opcional que queda guardada con esa posición. No deja pasar del total, y en el inicio se ve resumido. Si el libro no tiene el total de páginas cargado, se guarda la página pero no hay barra. Al tocar "Lo terminé", el progreso queda al 100%. Requiere `0003_progress.sql` y `0005_progress_percent.sql`.

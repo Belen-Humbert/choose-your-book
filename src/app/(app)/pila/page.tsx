@@ -49,6 +49,8 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
   }
 
   const params = await searchParams;
+  const imported = Number.parseInt(String(params.importados ?? ""), 10);
+  const repeated = Number.parseInt(String(params.repetidos ?? ""), 10) || 0;
   const tab = TABS.find((t) => t.param === params.estado) ?? TABS[0];
   const formato =
     params.formato === "digital" || params.formato === "fisico"
@@ -91,6 +93,13 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
           {heading}
         </h1>
       </div>
+
+      {Number.isFinite(imported) && (
+        <p role="status" className="rounded-xl border border-mostaza bg-mostaza/15 px-4 py-3 text-sm text-crema">
+          Importamos {imported} {imported === 1 ? "libro" : "libros"}
+          {repeated > 0 ? ` y salteamos ${repeated} que ya tenías` : ""}.
+        </p>
+      )}
 
       <nav aria-label="Estado de lectura" className="flex gap-2">
         {TABS.map((t) => {
