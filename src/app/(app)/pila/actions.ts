@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isUuid } from "@/lib/ids";
+import { NOTE_MAX_LENGTH } from "@/lib/notes";
+import { bookPercent, pageFromPercent, progressPercent } from "@/lib/progress";
 import { COVERS_BUCKET, coverStoragePath } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
 import type { BookStatus } from "@/lib/types";
@@ -85,11 +87,16 @@ export async function deleteBook(formData: FormData) {
   revalidatePath("/");
 }
 
-// Guarda la página por la que va el libro. Nunca pasa del total si lo conocemos.
-export async function setProgress(formData: FormData) {
+// Actualiza dónde va el libro, por página o por porcentaje (lo que muestre el lector digital),
+// y si viene una nota la guarda con esa misma posición. Nunca pasa del total si lo conocemos.
+export async function updateProgress(formData: FormData) {
   const id = String(formData.get("id") ?? "");
-  const raw = Number.parseInt(String(formData.get("page") ?? ""), 10);
-  if (!id || !Number.isFinite(raw) || raw < 0) return;
+  const mode = String(formData.get("mode") ?? "");
+  const value = Number.parseInt(String(formData.get("value") ?? ""), 10);
+  const body = String(formData.get("body") ?? "").trim().slice(0, NOTE_MAX_LENGTH);
+
+  if (!isUuid(id) || (mode !== "pagina" && mode !== "porcentaje")) return;
+  if (!Number.isFinite(value) || value < 0) return;
 
   const supabase = await createClient();
   const { data: book } = await supabase
@@ -99,8 +106,37 @@ export async function setProgress(formData: FormData) {
     .maybeSingle();
   if (!book) return;
 
-  const page = Math.min(raw, book.pages ?? 10000);
-  await supabase.from("books").update({ current_page: page }).eq("id", id);
+  const total: number | null = book.pages;
+  let page: number;
+  let percent: number | null;
+  if (mode === "porcentaje") {
+    percent = Math.min(100, value);
+    // Sin total de páginas no se puede saber la página: queda solo el porcentaje.
+    page = total ? pageFromPercent(percent, total) : 0;
+  } else {
+    page = Math.min(value, total ?? 10000);
+    percent = total ? progressPercent(page, total) : null;
+  }
+
+  const { error } = await supabase
+    .from("books")
+    .update({ current_page: page, current_percent: percent })
+    .eq("id", id);
+  if (error) {
+    backToBook(id, "No pudimos guardar el progreso. Probá de nuevo.");
+  }
+
+  if (body) {
+    const { error: noteError } = await supabase.from("book_notes").insert({
+      book_id: id,
+      body,
+      page: page > 0 ? page : null,
+      percent: percent !== null && percent > 0 ? percent : null,
+    });
+    if (noteError) {
+      backToBook(id, "Guardamos el progreso, pero no pudimos guardar la nota.");
+    }
+  }
 
   revalidatePath("/pila");
   revalidatePath("/pila/[id]", "page");
@@ -116,7 +152,11 @@ export async function setStatus(formData: FormData) {
   if (!id || !STATUSES.includes(status)) return;
 
   const supabase = await createClient();
-  const changes: { status: BookStatus; current_page?: number } = { status };
+  const changes: {
+    status: BookStatus;
+    current_page?: number;
+    current_percent?: number;
+  } = { status };
 
   // Al terminar un libro, el progreso queda completo (si sabemos cuántas páginas tiene).
   if (status === "leido") {
@@ -125,7 +165,10 @@ export async function setStatus(formData: FormData) {
       .select("pages")
       .eq("id", id)
       .maybeSingle();
-    if (book?.pages) changes.current_page = book.pages;
+    if (book?.pages) {
+      changes.current_page = book.pages;
+      changes.current_percent = 100;
+    }
   }
 
   await supabase.from("books").update(changes).eq("id", id);
@@ -144,25 +187,27 @@ function backToBook(bookId: string, message: string): never {
   redirect(`/pila/${bookId}?error=${encodeURIComponent(message)}`);
 }
 
-// Guarda una nota del libro. La fecha y la hora las pone la base de datos; la página es
-// la que tenía el libro en ese momento.
+// Guarda una nota suelta del libro (sin tocar el progreso). La fecha y la hora las pone la
+// base de datos; la página y el porcentaje son los que tenía el libro en ese momento.
 export async function addNote(formData: FormData) {
   const bookId = String(formData.get("book_id") ?? "");
-  const body = String(formData.get("body") ?? "").trim().slice(0, 2000);
+  const body = String(formData.get("body") ?? "").trim().slice(0, NOTE_MAX_LENGTH);
   if (!isUuid(bookId) || !body) return;
 
   const supabase = await createClient();
   const { data: book } = await supabase
     .from("books")
-    .select("current_page")
+    .select("pages, current_page, current_percent")
     .eq("id", bookId)
     .maybeSingle();
   if (!book) return;
 
+  const percent = bookPercent(book);
   const { error } = await supabase.from("book_notes").insert({
     book_id: bookId,
     body,
     page: book.current_page > 0 ? book.current_page : null,
+    percent: percent !== null && percent > 0 ? percent : null,
   });
   if (error) {
     backToBook(bookId, "No pudimos guardar la nota. Probá de nuevo.");

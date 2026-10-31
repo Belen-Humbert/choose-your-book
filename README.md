@@ -18,7 +18,7 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 
 2. Creá un proyecto en [Supabase](https://supabase.com) y copiá `.env.example` a `.env.local` con la URL y la publishable key del proyecto.
 
-3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`), `0002_covers.sql` (el espacio para las portadas que se suben) y `0003_progress.sql` (la página por la que va cada libro) y `0004_notes.sql` (las notas de lectura) en el SQL Editor de Supabase. Hay que pegar el contenido de cada archivo, no su nombre.
+3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`), `0002_covers.sql` (el espacio para las portadas que se suben) y `0003_progress.sql` (la página por la que va cada libro) `0004_notes.sql` (las notas de lectura) y `0005_progress_percent.sql` (el porcentaje de avance) en el SQL Editor de Supabase. Hay que pegar el contenido de cada archivo, no su nombre.
 
 4. Levantá la app:
 
@@ -68,11 +68,11 @@ Cada libro está en "Por leer", "Leyendo" o "Leído". Se cambia desde Mi pila o 
 
 ## Progreso de lectura
 
-Los libros que estás leyendo muestran una barra con la página actual y el porcentaje. Se actualiza desde Mi pila con "Página actual" y "Guardar progreso" (no deja pasar del total de páginas), y en el inicio se ve resumido. Si el libro no tiene el total de páginas cargado, se guarda la página pero no hay barra. Al tocar "Lo terminé", el progreso queda al 100%. Requiere `supabase/migrations/0003_progress.sql`.
+Los libros que estás leyendo muestran una barra con la página actual y el porcentaje. El botón **Actualizar progreso** abre un panel como el de Goodreads: "Voy por la página [__] de N" o "Voy por el [__] %" (selector `#` / `%`, porque los lectores digitales muestran porcentaje), con una nota opcional que queda guardada con esa posición. No deja pasar del total, y en el inicio se ve resumido. Si el libro no tiene el total de páginas cargado, se guarda la página pero no hay barra. Al tocar "Lo terminé", el progreso queda al 100%. Requiere `0003_progress.sql` y `0005_progress_percent.sql`.
 
 ## Notas de lectura
 
-Tocando un libro en Mi pila (o en "Leyendo ahora") se abre su detalle: portada, datos, progreso (si lo estás leyendo) y sus **notas**. Cada nota se guarda con la fecha y la hora, que se muestran en la zona horaria de quien mira la app, y con la página en la que ibas al escribirla. Se pueden borrar. Cada persona ve solo sus notas y solo puede escribir en sus libros. Al quitar un libro se borran también sus notas. Requiere `supabase/migrations/0004_notes.sql`.
+Tocando un libro en Mi pila (o en "Leyendo ahora") se abre su detalle: portada, datos, progreso (si lo estás leyendo) y sus **notas**. Cada nota se guarda con la fecha y la hora, que se muestran en la zona horaria de quien mira la app, y con la página y/o el porcentaje en que ibas al escribirla ("Página 225 · 54%"). Si estás leyendo el libro, la nota se escribe en el panel de Actualizar progreso. Se pueden borrar. Cada persona ve solo sus notas y solo puede escribir en sus libros. Al quitar un libro se borran también sus notas. Requiere `supabase/migrations/0004_notes.sql`.
 
 ## Próximos pasos
 

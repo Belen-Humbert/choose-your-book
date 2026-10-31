@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { addNote, deleteNote } from "@/app/(app)/pila/actions";
+import { NOTE_MAX_LENGTH } from "@/lib/notes";
+import { bookPercent, notePosition, positionLabel } from "@/lib/progress";
 import type { Book, BookNote, BookStatus } from "@/lib/types";
 import BookCover from "./BookCover";
 import FechaHora from "./FechaHora";
@@ -10,6 +12,23 @@ const STATUS_LABEL: Record<BookStatus, string> = {
   leyendo: "Leyendo",
   leido: "Leído",
 };
+
+// Dónde ibas cuando escribiste la nota: "Página 225 · 54%", "Página 80" o "54%".
+function PosicionNota({
+  note,
+  pages,
+}: {
+  note: BookNote;
+  pages: number | null;
+}) {
+  const label = positionLabel(notePosition(note, pages));
+  if (!label) return null;
+  return (
+    <span className="rounded-[10px] bg-petroleo px-2.5 py-0.5 font-bold text-crema">
+      {label}
+    </span>
+  );
+}
 
 export default function DetalleLibro({
   book,
@@ -25,6 +44,12 @@ export default function DetalleLibro({
   const meta = [book.genre, book.pages ? `${book.pages} págs` : null]
     .filter(Boolean)
     .join(" · ");
+
+  const percentNow = bookPercent(book);
+  const nowLabel = positionLabel({
+    page: book.current_page > 0 ? book.current_page : null,
+    percent: percentNow !== null && percentNow > 0 ? percentNow : null,
+  });
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-5 py-6">
@@ -107,39 +132,44 @@ export default function DetalleLibro({
           </p>
         )}
 
-        <form action={addNote} className="flex flex-col gap-2">
-          <input type="hidden" name="book_id" value={book.id} />
-          <label
-            htmlFor="nota"
-            className="text-sm font-medium text-crema-suave"
-          >
-            Nueva nota
-          </label>
-          <textarea
-            id="nota"
-            name="body"
-            required
-            maxLength={2000}
-            rows={4}
-            placeholder="¿Qué te va pareciendo? Una frase, una duda, una cita…"
-            className="min-h-28 w-full resize-y rounded-xl border-0 bg-crema p-3 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
-          />
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="min-w-0 flex-1 text-xs text-crema-suave">
-              Se guarda con la fecha y la hora
-              {book.current_page > 0
-                ? ` y la página ${book.current_page}`
-                : ""}
-              .
-            </p>
-            <button
-              type="submit"
-              className="h-12 cursor-pointer rounded-full bg-mostaza px-6 text-base font-bold text-tinta shadow-[0_3px_0_#9a6f10] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema"
+        {book.status === "leyendo" ? (
+          <p className="text-sm text-crema-suave">
+            Para dejar una nota, tocá “Actualizar progreso” más arriba: queda
+            guardada con la fecha, la hora y la página o el porcentaje en que
+            ibas.
+          </p>
+        ) : (
+          <form action={addNote} className="flex flex-col gap-2">
+            <input type="hidden" name="book_id" value={book.id} />
+            <label
+              htmlFor="nota"
+              className="text-sm font-medium text-crema-suave"
             >
-              Guardar nota
-            </button>
-          </div>
-        </form>
+              Nueva nota
+            </label>
+            <textarea
+              id="nota"
+              name="body"
+              required
+              maxLength={NOTE_MAX_LENGTH}
+              rows={4}
+              placeholder="¿Qué te pareció? Una frase, una duda, una cita…"
+              className="min-h-28 w-full resize-y rounded-xl border-0 bg-crema p-3 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+            />
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="min-w-0 flex-1 text-xs text-crema-suave">
+                Se guarda con la fecha y la hora
+                {nowLabel ? ` y el punto en que vas (${nowLabel})` : ""}.
+              </p>
+              <button
+                type="submit"
+                className="h-12 cursor-pointer rounded-full bg-mostaza px-6 text-base font-bold text-tinta shadow-[0_3px_0_#9a6f10] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema"
+              >
+                Guardar nota
+              </button>
+            </div>
+          </form>
+        )}
 
         {notesFailed ? (
           <p
@@ -163,11 +193,7 @@ export default function DetalleLibro({
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-crema-suave">
                     <FechaHora iso={note.created_at} />
-                    {note.page !== null && (
-                      <span className="rounded-[10px] bg-petroleo px-2.5 py-0.5 font-bold text-crema">
-                        Página {note.page}
-                      </span>
-                    )}
+                    <PosicionNota note={note} pages={book.pages} />
                   </div>
                   <form action={deleteNote}>
                     <input type="hidden" name="note_id" value={note.id} />

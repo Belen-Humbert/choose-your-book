@@ -1,6 +1,6 @@
-import { setProgress } from "@/app/(app)/pila/actions";
-import { progressPercent } from "@/lib/progress";
+import { bookPercent, progressSummary } from "@/lib/progress";
 import type { Book } from "@/lib/types";
+import ActualizarProgreso from "./ActualizarProgreso";
 
 function Barra({ percent, label }: { percent: number; label: string }) {
   return (
@@ -21,7 +21,8 @@ function Barra({ percent, label }: { percent: number; label: string }) {
 }
 
 // Progreso de un libro que estás leyendo.
-// compact: solo la barra y un resumen (para el inicio). Completo: con el campo para actualizar la página.
+// compact: solo la barra y un resumen (para el inicio). Completo: con el panel para actualizar
+// el avance (por página o por porcentaje) y dejar una nota.
 export default function ProgresoLectura({
   book,
   compact = false,
@@ -29,12 +30,8 @@ export default function ProgresoLectura({
   book: Book;
   compact?: boolean;
 }) {
-  const percent = progressPercent(book.current_page, book.pages);
-  const summary = book.pages
-    ? `Página ${book.current_page} de ${book.pages}`
-    : book.current_page > 0
-      ? `Vas por la página ${book.current_page}`
-      : "Todavía no empezaste";
+  const percent = bookPercent(book);
+  const summary = progressSummary(book);
 
   if (compact) {
     return (
@@ -44,13 +41,13 @@ export default function ProgresoLectura({
         )}
         <p className="text-xs text-crema-suave">
           {summary}
-          {percent !== null ? ` · ${percent}%` : ""}
+          {percent !== null && book.pages ? ` · ${percent}%` : ""}
         </p>
       </div>
     );
   }
 
-  const finished = book.pages !== null && book.current_page >= book.pages;
+  const finished = percent !== null && percent >= 100;
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -70,47 +67,7 @@ export default function ProgresoLectura({
         )}
       </div>
 
-      {/* key: al guardar, el campo toma el valor nuevo que viene del servidor */}
-      <form
-        key={book.current_page}
-        action={setProgress}
-        className="flex h-12 items-center rounded-full border border-borde bg-tinta/40 pl-4 pr-0.5 focus-within:border-mostaza focus-within:ring-2 focus-within:ring-mostaza"
-      >
-        <input type="hidden" name="id" value={book.id} />
-        <label className="flex min-w-0 flex-1 items-center gap-2 whitespace-nowrap text-[13px] text-crema-suave">
-          Voy por la página
-          <input
-            name="page"
-            aria-label="Página actual"
-            type="number"
-            inputMode="numeric"
-            min={0}
-            max={book.pages ?? 10000}
-            defaultValue={book.current_page}
-            required
-            className="h-10 w-16 rounded-lg border-0 bg-transparent px-1 text-center font-display text-lg font-extrabold text-crema [appearance:textfield] focus-visible:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-          />
-        </label>
-        <button
-          type="submit"
-          aria-label="Guardar progreso"
-          className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-mostaza text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
-        >
-          <svg
-            aria-hidden="true"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M5 12.5l4.5 4.5L19 7.5" />
-          </svg>
-        </button>
-      </form>
+      <ActualizarProgreso book={book} />
 
       {finished && (
         <p className="text-[13px] font-bold text-mostaza">
