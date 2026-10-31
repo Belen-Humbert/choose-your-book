@@ -2,6 +2,7 @@ import Link from "next/link";
 import { deleteBook, setStatus } from "@/app/(app)/pila/actions";
 import type { Book, BookStatus } from "@/lib/types";
 import BookCover from "./BookCover";
+import FormatoLibro from "./FormatoLibro";
 import ProgresoLectura from "./ProgresoLectura";
 
 // Qué botones de estado se ofrecen según dónde está el libro.
@@ -37,16 +38,6 @@ export default function BookRow({ book }: { book: Book }) {
               <p className="text-[13px] text-crema-suave">{book.author}</p>
             )}
             <div className="mt-1 flex flex-wrap items-center gap-2">
-              {book.has_digital && (
-                <span className="rounded-[10px] bg-petroleo px-2.5 py-0.5 text-xs font-bold text-crema">
-                  Digital
-                </span>
-              )}
-              {book.has_physical && (
-                <span className="rounded-[10px] bg-mostaza px-2.5 py-0.5 text-xs font-bold text-tinta">
-                  Físico
-                </span>
-              )}
               {meta && <span className="text-xs text-crema-suave">{meta}</span>}
             </div>
             <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-bold text-mostaza">
@@ -91,6 +82,8 @@ export default function BookRow({ book }: { book: Book }) {
           </button>
         </form>
       </div>
+
+      <FormatoLibro book={book} />
 
       {book.status === "leyendo" && <ProgresoLectura book={book} />}
 

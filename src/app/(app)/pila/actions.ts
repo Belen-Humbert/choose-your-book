@@ -37,9 +37,6 @@ export async function addBook(formData: FormData) {
   if (!title) {
     backToForm("Falta el título.");
   }
-  if (!hasDigital && !hasPhysical) {
-    backToForm("Marcá si lo tenés en digital, en físico o en ambos.");
-  }
 
   const supabase = await createClient();
   const { error } = await supabase.from("books").insert({
@@ -239,7 +236,6 @@ function backToImport(message: string): never {
 export async function importGoodreads(formData: FormData) {
   const file = formData.get("archivo");
   const only = String(formData.get("que") ?? "por-leer");
-  const defaultFormat = String(formData.get("formato") ?? "fisico");
 
   if (!(file instanceof File) || file.size === 0) {
     backToImport("Elegí el archivo CSV que descargaste de Goodreads.");
@@ -251,7 +247,7 @@ export async function importGoodreads(formData: FormData) {
   const parsed = parseGoodreadsExport(await file.text());
   if (!parsed) {
     backToImport(
-      "Ese archivo no parece un export de Goodreads. Tiene que ser el CSV de “Importar y exportar”.",
+      "Ese archivo no parece un export de Goodreads. Tiene que ser el CSV de “Importación/Exportación”.",
     );
   }
 
@@ -281,15 +277,14 @@ export async function importGoodreads(formData: FormData) {
       continue;
     }
     seen.add(key);
-    const format = b.format ?? (defaultFormat === "digital" ? "digital" : "fisico");
     const done = b.status === "leido" && b.pages;
     rows.push({
       title: b.title,
       author: b.author,
       pages: b.pages,
       status: b.status,
-      has_digital: format === "digital",
-      has_physical: format === "fisico",
+      has_digital: b.format === "digital",
+      has_physical: b.format === "fisico",
       current_page: done ? b.pages : 0,
       current_percent: done ? 100 : null,
     });
@@ -309,4 +304,29 @@ export async function importGoodreads(formData: FormData) {
   revalidatePath("/pila");
   revalidatePath("/");
   redirect(`/pila?importados=${rows.length}&repetidos=${repeated}`);
+}
+
+// Marca o desmarca un formato (digital / físico) de un libro. Puede quedar sin ninguno.
+export async function toggleFormat(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const format = String(formData.get("formato") ?? "");
+  if (!isUuid(id) || (format !== "digital" && format !== "fisico")) return;
+
+  const supabase = await createClient();
+  const { data: book } = await supabase
+    .from("books")
+    .select("has_digital, has_physical")
+    .eq("id", id)
+    .maybeSingle();
+  if (!book) return;
+
+  const changes =
+    format === "digital"
+      ? { has_digital: !book.has_digital }
+      : { has_physical: !book.has_physical };
+  await supabase.from("books").update(changes).eq("id", id);
+
+  revalidatePath("/pila");
+  revalidatePath("/pila/[id]", "page");
+  revalidatePath("/");
 }

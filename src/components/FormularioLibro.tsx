@@ -133,7 +133,7 @@ export default function FormularioLibro() {
 
         <fieldset className="flex flex-col gap-2">
           <legend className="text-sm font-medium text-crema-suave">
-            ¿Dónde lo tenés?
+            ¿En qué formato lo vas a leer? (opcional)
           </legend>
           <div className="flex gap-2">
             <label className="cursor-pointer">
@@ -149,6 +149,9 @@ export default function FormularioLibro() {
               </span>
             </label>
           </div>
+          <p className="text-xs text-crema-suave">
+            Si todavía no lo sabés, dejalo sin marcar y lo elegís después en Mi pila.
+          </p>
         </fieldset>
 
         <button

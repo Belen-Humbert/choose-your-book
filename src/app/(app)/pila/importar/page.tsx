@@ -77,22 +77,10 @@ export default async function ImportarPage({
           </label>
         </fieldset>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className="mb-1 text-sm font-medium text-crema-suave">
-            Formato cuando Goodreads no lo dice
-          </legend>
-          <label className="flex min-h-11 items-center gap-3 text-crema">
-            <input type="radio" name="formato" value="fisico" defaultChecked className="size-5 accent-mostaza" />
-            Físico
-          </label>
-          <label className="flex min-h-11 items-center gap-3 text-crema">
-            <input type="radio" name="formato" value="digital" className="size-5 accent-mostaza" />
-            Digital
-          </label>
-          <p className="text-xs text-crema-suave">
-            Los “Kindle Edition” se cargan como digital. Después podés cambiarlo.
-          </p>
-        </fieldset>
+        <p className="text-xs text-crema-suave">
+          Los “Kindle Edition” se cargan como digital. Los demás quedan sin
+          formato, y en Mi pila elegís cuál vas a leer con un toque.
+        </p>
 
         <button
           type="submit"

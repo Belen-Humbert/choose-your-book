@@ -18,7 +18,7 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 
 2. Creá un proyecto en [Supabase](https://supabase.com) y copiá `.env.example` a `.env.local` con la URL y la publishable key del proyecto.
 
-3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`), `0002_covers.sql` (el espacio para las portadas que se suben) y `0003_progress.sql` (la página por la que va cada libro) `0004_notes.sql` (las notas de lectura) y `0005_progress_percent.sql` (el porcentaje de avance) en el SQL Editor de Supabase. Hay que pegar el contenido de cada archivo, no su nombre.
+3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`), `0002_covers.sql` (el espacio para las portadas que se suben) y `0003_progress.sql` (la página por la que va cada libro) `0004_notes.sql` (las notas de lectura) `0005_progress_percent.sql` (el porcentaje de avance) y `0006_format_optional.sql` (el formato puede quedar sin definir) en el SQL Editor de Supabase. Hay que pegar el contenido de cada archivo, no su nombre.
 
 4. Levantá la app:
 
@@ -66,9 +66,13 @@ Requiere haber corrido `supabase/migrations/0002_covers.sql`. Si no, la app avis
 
 Cada libro está en "Por leer", "Leyendo" o "Leído". Se cambia desde Mi pila o con el botón "Empezar a leer" de la ruleta. Lo que estás leyendo aparece arriba en el inicio, y la ruleta solo sortea entre los "Por leer".
 
+## Formato (digital / físico)
+
+El formato es opcional. En Mi pila, los libros sin formato muestran dos botones con ícono (físico y digital) para marcarlo con un toque, y se pueden marcar los dos. Tocando la etiqueta de un libro con formato se cambia. La ruleta ignora los libros sin formato solo cuando filtrás por uno. Requiere `supabase/migrations/0006_format_optional.sql`.
+
 ## Importar desde Goodreads
 
-Desde "Sumá un libro" → "¿Ya tenés una lista en Goodreads? Importala" (`/pila/importar`) se sube el CSV que Goodreads genera en Mis libros → Importación/Exportación. Se puede importar solo "quiero leer" o todo (los estantes `to-read`, `currently-reading` y `read` pasan a Por leer, Leyendo y Leídos). Los "Kindle Edition" y similares quedan como digital; si el archivo no dice el formato, se usa el que elijas. Los libros que ya están en la pila (mismo título y autor) se saltean. Límite: 2 MB y 1000 libros. No necesita migración nueva.
+Desde "Sumá un libro" → "¿Ya tenés una lista en Goodreads? Importala" (`/pila/importar`) se sube el CSV que Goodreads genera en Mis libros → Importación/Exportación. Se puede importar solo "quiero leer" o todo (los estantes `to-read`, `currently-reading` y `read` pasan a Por leer, Leyendo y Leídos). Los "Kindle Edition" y similares quedan como digital; si el archivo no dice el formato, el libro queda sin formato. Los libros que ya están en la pila (mismo título y autor) se saltean. Límite: 2 MB y 1000 libros. No necesita migración nueva.
 
 ## Progreso de lectura
 

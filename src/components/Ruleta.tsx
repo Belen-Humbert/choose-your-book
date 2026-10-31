@@ -316,12 +316,13 @@ export default function Ruleta({ books }: { books: Book[] }) {
               {winner.author && <p className="text-sm">{winner.author}</p>}
               <p className="text-[13px] text-[#5a4636]">
                 {[
-                  winner.has_digital ? "Digital" : null,
-                  winner.has_physical ? "Físico" : null,
+                  [winner.has_digital ? "Digital" : null, winner.has_physical ? "Físico" : null]
+                    .filter(Boolean)
+                    .join(" y "),
+                  winnerMeta,
                 ]
                   .filter(Boolean)
-                  .join(" y ")}
-                {winnerMeta ? ` · ${winnerMeta}` : ""}
+                  .join(" · ")}
               </p>
               <form action={setStatus} className="mt-1">
                 <input type="hidden" name="id" value={winner.id} />
