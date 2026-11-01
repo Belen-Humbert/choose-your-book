@@ -10,7 +10,9 @@ const BUCKET = COVERS_BUCKET;
 
 // Si la portada anterior la había subido esta persona, la borramos para no dejar archivos sueltos.
 // Las portadas de Google Books u Open Library no se tocan.
-function discardUploaded(url: string | null) {
+function discardUploaded(url: string | null, keep?: string | null) {
+  // `keep` es la portada ya guardada del libro: se borra recién al guardar los cambios.
+  if (keep && url === keep) return;
   const path = coverStoragePath(url);
   if (path) void createClient().storage.from(BUCKET).remove([path]);
 }
@@ -49,11 +51,14 @@ export default function SubirPortada({
   coverUrl,
   onChange,
   onUploadingChange,
+  savedUrl,
 }: {
   coverUrl: string | null;
   onChange: (url: string | null) => void;
   // Avisa al formulario para que no deje guardar mientras la imagen todavía se está subiendo.
   onUploadingChange?: (uploading: boolean) => void;
+  // Al editar un libro: la portada que ya tiene guardada (no se borra hasta guardar).
+  savedUrl?: string | null;
 }) {
   const inputId = useId();
   const [uploading, setUploading] = useState(false);
@@ -69,7 +74,7 @@ export default function SubirPortada({
     onUploadingChange?.(true);
     try {
       const newUrl = await uploadCover(file);
-      discardUploaded(coverUrl);
+      discardUploaded(coverUrl, savedUrl);
       onChange(newUrl);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "No pudimos subir la imagen.");
@@ -126,7 +131,7 @@ export default function SubirPortada({
             <button
               type="button"
               onClick={() => {
-                discardUploaded(coverUrl);
+                discardUploaded(coverUrl, savedUrl);
                 onChange(null);
               }}
               className={`${buttonClass} border-borde font-medium text-crema-suave`}

@@ -98,6 +98,17 @@ export default function DetalleLibro({
             )}
             {meta && <span className="text-xs text-crema-suave">{meta}</span>}
           </div>
+          {book.status === "leido" && book.finished_at && (
+            <p className="text-xs text-crema-suave">
+              Terminado el <FechaHora iso={book.finished_at} soloFecha />
+            </p>
+          )}
+          <Link
+            href={`/pila/${book.id}/editar`}
+            className="inline-flex min-h-11 items-center self-start text-sm font-bold text-mostaza underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+          >
+            Editar libro
+          </Link>
         </div>
       </header>
 

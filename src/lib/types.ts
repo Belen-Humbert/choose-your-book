@@ -26,5 +26,6 @@ export type Book = {
   has_digital: boolean;
   has_physical: boolean;
   status: BookStatus;
+  finished_at: string | null; // cuándo terminó de leerlo (solo libros leídos; ver 0007)
   created_at: string;
 };

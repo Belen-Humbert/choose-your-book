@@ -48,6 +48,8 @@ export type ImportedBook = {
   status: BookStatus;
   // Fecha en que lo agregaste a Goodreads (ISO), para ordenar la pila como allá.
   addedAt: string | null;
+  // Fecha en que lo terminaste de leer (ISO), si Goodreads la tiene.
+  readAt: string | null;
   // null: el CSV no dice el formato; se usa el que elige la persona.
   format: "digital" | "fisico" | null;
 };
@@ -89,6 +91,7 @@ export function parseGoodreadsExport(text: string): ImportedBook[] | null {
   const iPages = col("number of pages");
   const iBinding = col("binding");
   const iAdded = col("date added");
+  const iRead = col("date read");
 
   const books: ImportedBook[] = [];
   for (const row of rows.slice(1)) {
@@ -103,6 +106,7 @@ export function parseGoodreadsExport(text: string): ImportedBook[] | null {
       pages: Number.isFinite(pages) && pages > 0 && pages < 20000 ? pages : null,
       status,
       addedAt: iAdded >= 0 ? goodreadsDate(row[iAdded] ?? "") : null,
+      readAt: iRead >= 0 ? goodreadsDate(row[iRead] ?? "") : null,
       format: iBinding >= 0 ? formatFromBinding((row[iBinding] ?? "").trim()) : null,
     });
   }

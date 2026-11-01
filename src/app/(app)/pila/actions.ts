@@ -156,7 +156,8 @@ export async function setStatus(formData: FormData) {
     status: BookStatus;
     current_page?: number;
     current_percent?: number;
-  } = { status };
+    finished_at?: string | null;
+  } = { status, finished_at: status === "leido" ? new Date().toISOString() : null };
 
   // Al terminar un libro, el progreso queda completo (si sabemos cuántas páginas tiene).
   if (status === "leido") {
@@ -264,7 +265,7 @@ export async function importGoodreads(formData: FormData) {
   const supabase = await createClient();
   const { data: existing, error: readError } = await supabase
     .from("books")
-    .select("id, title, author, created_at");
+    .select("id, title, author, created_at, finished_at");
   if (readError) {
     backToImport("No pudimos revisar tu pila. Probá de nuevo.");
   }
@@ -273,7 +274,7 @@ export async function importGoodreads(formData: FormData) {
   );
 
   const rows = [];
-  const redate: { id: string; created_at: string }[] = [];
+  const redate: { id: string; changes: { created_at?: string; finished_at?: string } }[] = [];
   let repeated = 0;
   for (const b of wanted) {
     const key = bookKey(b.title, b.author);
@@ -281,12 +282,21 @@ export async function importGoodreads(formData: FormData) {
     if (already) {
       repeated++;
       // Si ya estaba, le ponemos la fecha de Goodreads (así se ordena como allá).
+      const changes: { created_at?: string; finished_at?: string } = {};
       if (b.addedAt && Date.parse(already.created_at) !== Date.parse(b.addedAt)) {
-        redate.push({ id: already.id, created_at: b.addedAt });
+        changes.created_at = b.addedAt;
       }
+      if (
+        b.status === "leido" &&
+        b.readAt &&
+        (!already.finished_at || Date.parse(already.finished_at) !== Date.parse(b.readAt))
+      ) {
+        changes.finished_at = b.readAt;
+      }
+      if (Object.keys(changes).length > 0) redate.push({ id: already.id, changes });
       continue;
     }
-    seen.set(key, { id: "", title: b.title, author: b.author, created_at: "" });
+    seen.set(key, { id: "", title: b.title, author: b.author, created_at: "", finished_at: null });
     const done = b.status === "leido" && b.pages;
     rows.push({
       title: b.title,
@@ -294,6 +304,7 @@ export async function importGoodreads(formData: FormData) {
       pages: b.pages,
       status: b.status,
       ...(b.addedAt ? { created_at: b.addedAt } : {}),
+      ...(b.status === "leido" && b.readAt ? { finished_at: b.readAt } : {}),
       has_digital: b.format === "digital",
       has_physical: b.format === "fisico",
       current_page: done ? b.pages : 0,
@@ -317,7 +328,7 @@ export async function importGoodreads(formData: FormData) {
       redate
         .slice(i, i + 25)
         .map((r) =>
-          supabase.from("books").update({ created_at: r.created_at }).eq("id", r.id),
+          supabase.from("books").update(r.changes).eq("id", r.id),
         ),
     );
   }
@@ -395,4 +406,64 @@ export async function completeBookData(
   revalidatePath("/pila");
   revalidatePath("/");
   return { updated, notFound };
+}
+
+// Edita los datos de un libro. La fecha de lectura solo se toca en libros leídos.
+export async function updateBook(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  if (!isUuid(id)) return;
+  const back = (message: string): never =>
+    redirect(`/pila/${id}/editar?error=${encodeURIComponent(message)}`);
+
+  const title = String(formData.get("title") ?? "").trim();
+  const author = String(formData.get("author") ?? "").trim();
+  const genre = String(formData.get("genre") ?? "").trim();
+  const pages = Number.parseInt(String(formData.get("pages") ?? ""), 10);
+  const finishedOn = String(formData.get("finished_on") ?? "").trim();
+  if (!title) back("Falta el título.");
+
+  const supabase = await createClient();
+  const { data: current } = await supabase
+    .from("books")
+    .select("status, cover_url, current_page, current_percent")
+    .eq("id", id)
+    .maybeSingle();
+  if (!current) return;
+
+  const newPages = Number.isFinite(pages) && pages > 0 && pages <= 10000 ? pages : null;
+  const newCover = cleanCoverUrl(formData.get("cover_url"));
+  const changes: Record<string, unknown> = {
+    title: title.slice(0, 200),
+    author: author.slice(0, 200) || null,
+    genre: genre.slice(0, 50) || null,
+    pages: newPages,
+    cover_url: newCover,
+    has_digital: formData.get("digital") === "on",
+    has_physical: formData.get("fisico") === "on",
+  };
+  // Si cambió el total de páginas, el avance no puede quedar por encima.
+  if (newPages && current.current_page > newPages) changes.current_page = newPages;
+
+  if (current.status === "leido" && finishedOn) {
+    const date = new Date(`${finishedOn}T12:00:00.000Z`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(finishedOn) || Number.isNaN(date.getTime())) {
+      back("La fecha de lectura no es válida.");
+    }
+    if (date.getTime() > Date.now() + 864e5) back("La fecha de lectura no puede ser futura.");
+    changes.finished_at = date.toISOString();
+  }
+
+  const { error } = await supabase.from("books").update(changes).eq("id", id);
+  if (error) back("No pudimos guardar los cambios. Probá de nuevo.");
+
+  // Si se reemplazó o quitó una portada subida por la persona, borramos el archivo anterior.
+  const oldPath = coverStoragePath(current.cover_url);
+  if (oldPath && current.cover_url !== newCover) {
+    await supabase.storage.from(COVERS_BUCKET).remove([oldPath]);
+  }
+
+  revalidatePath("/pila");
+  revalidatePath("/pila/[id]", "page");
+  revalidatePath("/");
+  redirect(`/pila/${id}`);
 }

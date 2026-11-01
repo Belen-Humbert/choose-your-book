@@ -20,16 +20,15 @@ export function matchesQuery(book: Pick<Book, "title" | "author">, query: string
   return words.every((word) => haystack.includes(word));
 }
 
-// Ordena por fecha en que se agregó. Si dos libros se agregaron a la vez (por ejemplo en una
-// importación), desempata por título para que el orden sea estable.
-export function sortBooks<T extends Pick<Book, "title" | "created_at">>(
-  books: T[],
-  orden: Orden,
-): T[] {
+// Ordena por la fecha en que se agregó o, en los leídos, por la fecha en que se terminó (los que no
+// la tienen usan la de agregado). Si dos libros tienen la misma fecha, desempata por título.
+export function sortBooks<
+  T extends Pick<Book, "title" | "created_at"> & { finished_at?: string | null },
+>(books: T[], orden: Orden, by: "agregado" | "terminado" = "agregado"): T[] {
   const sign = orden === "viejos" ? 1 : -1;
+  const date = (b: T) =>
+    Date.parse(by === "terminado" ? (b.finished_at ?? b.created_at) : b.created_at);
   return [...books].sort(
-    (a, b) =>
-      sign * (Date.parse(a.created_at) - Date.parse(b.created_at)) ||
-      a.title.localeCompare(b.title, "es"),
+    (a, b) => sign * (date(a) - date(b)) || a.title.localeCompare(b.title, "es"),
   );
 }

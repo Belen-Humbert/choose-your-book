@@ -2,6 +2,7 @@ import Link from "next/link";
 import { deleteBook, setStatus } from "@/app/(app)/pila/actions";
 import type { Book, BookStatus } from "@/lib/types";
 import BookCover from "./BookCover";
+import FechaHora from "./FechaHora";
 import FormatoLibro from "./FormatoLibro";
 import ProgresoLectura from "./ProgresoLectura";
 
@@ -38,6 +39,11 @@ export default function BookRow({ book }: { book: Book }) {
               <p className="text-[13px] text-crema-suave">{book.author}</p>
             )}
             <div className="mt-1 flex flex-wrap items-center gap-2">
+              {book.status === "leido" && book.finished_at && (
+                <span className="text-xs text-crema-suave">
+                  Terminado el <FechaHora iso={book.finished_at} soloFecha />
+                </span>
+              )}
               {meta && <span className="text-xs text-crema-suave">{meta}</span>}
             </div>
             <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-bold text-mostaza">

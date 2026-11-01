@@ -5,7 +5,7 @@ import { useSyncExternalStore } from "react";
 const subscribe = () => () => {};
 
 // Ej.: "30 oct 2026 · 16:37" (hora de 24 h, sin "de" entre medio).
-function format(iso: string) {
+function format(iso: string, soloFecha = false) {
   const date = new Date(iso);
   const day = date
     .toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })
@@ -16,15 +16,21 @@ function format(iso: string) {
     minute: "2-digit",
     hourCycle: "h23",
   });
-  return `${day} · ${time}`;
+  return soloFecha ? day : `${day} · ${time}`;
 }
 
 // Muestra la fecha y la hora en la zona horaria de quien mira la app. El servidor no sabe cuál es,
 // así que el texto se arma en el navegador (en el servidor queda vacío un instante).
-export default function FechaHora({ iso }: { iso: string }) {
+export default function FechaHora({
+  iso,
+  soloFecha = false,
+}: {
+  iso: string;
+  soloFecha?: boolean;
+}) {
   const text = useSyncExternalStore(
     subscribe,
-    () => format(iso),
+    () => format(iso, soloFecha),
     () => "",
   );
   return <time dateTime={iso}>{text}</time>;

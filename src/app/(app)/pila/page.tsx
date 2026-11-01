@@ -89,6 +89,7 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
       return matchesQuery(book, q);
     }),
     orden,
+    tab.status === "leido" ? "terminado" : "agregado",
   );
 
   // Libros por leer o leyendo a los que les falta género o portada.
@@ -170,7 +171,11 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
           </button>
         </div>
         <div className="flex items-center gap-2 text-sm text-crema-suave">
-          <label htmlFor="orden">Ordenar por fecha en que lo agregué</label>
+          <label htmlFor="orden">
+            {tab.status === "leido"
+              ? "Ordenar por fecha en que lo terminé"
+              : "Ordenar por fecha en que lo agregué"}
+          </label>
           <select
             id="orden"
             name="orden"
