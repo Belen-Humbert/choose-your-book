@@ -68,7 +68,7 @@ Cada libro está en "Por leer", "Leyendo" o "Leído". Se cambia desde Mi pila o 
 
 ## Buscar y ordenar en Mi pila
 
-Arriba de la lista hay un buscador por título o autor (sin distinguir mayúsculas ni tildes; todas las palabras tienen que coincidir) que busca dentro de la pestaña en la que estás (Por leer, Leyendo o Leídos) y respeta el filtro de formato. También se puede ordenar por la fecha en que se agregó cada libro, más nuevos o más viejos primero. Los libros importados juntos comparten fecha, y entre ellos el orden es alfabético.
+Arriba de la lista hay un buscador por título o autor (sin distinguir mayúsculas ni tildes; todas las palabras tienen que coincidir) que busca dentro de la pestaña en la que estás (Por leer, Leyendo o Leídos) y respeta el filtro de formato. También se puede ordenar por la fecha en que se agregó cada libro, más nuevos o más viejos primero. Los libros importados de Goodreads usan la fecha en que los agregaste allá.
 
 ## Formato (digital / físico)
 
@@ -76,7 +76,7 @@ El formato es opcional. En Mi pila, los libros sin formato muestran dos botones 
 
 ## Importar desde Goodreads
 
-Desde "Sumá un libro" → "¿Ya tenés una lista en Goodreads? Importala" (`/pila/importar`) se sube el CSV que Goodreads genera en Mis libros → Importación/Exportación. Se puede importar solo "quiero leer" o todo (los estantes `to-read`, `currently-reading` y `read` pasan a Por leer, Leyendo y Leídos). Los "Kindle Edition" y similares quedan como digital; si el archivo no dice el formato, el libro queda sin formato. Los libros que ya están en la pila (mismo título y autor) se saltean. Límite: 2 MB y 1000 libros. No necesita migración nueva.
+Desde "Sumá un libro" → "¿Ya tenés una lista en Goodreads? Importala" (`/pila/importar`) se sube el CSV que Goodreads genera en Mis libros → Importación/Exportación. Se puede importar solo "quiero leer" o todo (los estantes `to-read`, `currently-reading` y `read` pasan a Por leer, Leyendo y Leídos). Los "Kindle Edition" y similares quedan como digital; si el archivo no dice el formato, el libro queda sin formato. Cada libro conserva la fecha en que lo agregaste a Goodreads (columna "Date Added"), así el orden por fecha de Mi pila es el de allá. Los libros que ya están en la pila (mismo título y autor) no se duplican; si volvés a subir el archivo, solo se les corrige esa fecha. Los libros del estante "did-not-finish" y los de estantes propios no se importan. Límite: 2 MB y 1000 libros. No necesita migración nueva.
 
 ## Progreso de lectura
 

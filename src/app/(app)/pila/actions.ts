@@ -262,27 +262,36 @@ export async function importGoodreads(formData: FormData) {
   const supabase = await createClient();
   const { data: existing, error: readError } = await supabase
     .from("books")
-    .select("title, author");
+    .select("id, title, author, created_at");
   if (readError) {
     backToImport("No pudimos revisar tu pila. Probá de nuevo.");
   }
-  const seen = new Set((existing ?? []).map((b) => bookKey(b.title, b.author)));
+  const seen = new Map(
+    (existing ?? []).map((b) => [bookKey(b.title, b.author), b] as const),
+  );
 
   const rows = [];
+  const redate: { id: string; created_at: string }[] = [];
   let repeated = 0;
   for (const b of wanted) {
     const key = bookKey(b.title, b.author);
-    if (seen.has(key)) {
+    const already = seen.get(key);
+    if (already) {
       repeated++;
+      // Si ya estaba, le ponemos la fecha de Goodreads (así se ordena como allá).
+      if (b.addedAt && Date.parse(already.created_at) !== Date.parse(b.addedAt)) {
+        redate.push({ id: already.id, created_at: b.addedAt });
+      }
       continue;
     }
-    seen.add(key);
+    seen.set(key, { id: "", title: b.title, author: b.author, created_at: "" });
     const done = b.status === "leido" && b.pages;
     rows.push({
       title: b.title,
       author: b.author,
       pages: b.pages,
       status: b.status,
+      ...(b.addedAt ? { created_at: b.addedAt } : {}),
       has_digital: b.format === "digital",
       has_physical: b.format === "fisico",
       current_page: done ? b.pages : 0,
@@ -299,6 +308,16 @@ export async function importGoodreads(formData: FormData) {
           : "No pudimos guardar los libros. Probá de nuevo.",
       );
     }
+  }
+
+  for (let i = 0; i < redate.length; i += 25) {
+    await Promise.all(
+      redate
+        .slice(i, i + 25)
+        .map((r) =>
+          supabase.from("books").update({ created_at: r.created_at }).eq("id", r.id),
+        ),
+    );
   }
 
   revalidatePath("/pila");
