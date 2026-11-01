@@ -12,12 +12,15 @@ export function normalizeText(text: string): string {
     .trim();
 }
 
-// Todas las palabras buscadas tienen que aparecer en el título o en el autor.
+// Cada palabra buscada tiene que ser el comienzo de alguna palabra del título o del autor
+// ("king" encuentra "Stephen King" pero no "Hawking").
 export function matchesQuery(book: Pick<Book, "title" | "author">, query: string): boolean {
   const words = normalizeText(query).split(" ").filter(Boolean);
   if (words.length === 0) return true;
-  const haystack = normalizeText(`${book.title} ${book.author ?? ""}`);
-  return words.every((word) => haystack.includes(word));
+  const haystack = normalizeText(`${book.title} ${book.author ?? ""}`)
+    .split(/[^a-z0-9ñ]+/)
+    .filter(Boolean);
+  return words.every((word) => haystack.some((h) => h.startsWith(word)));
 }
 
 // Ordena por la fecha en que se agregó o, en los leídos, por la fecha en que se terminó (los que no
