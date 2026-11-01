@@ -10,7 +10,7 @@ function Barra({ percent, label }: { percent: number; label: string }) {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={percent}
-      className="h-3 w-full overflow-hidden rounded-full bg-tinta/60 ring-1 ring-inset ring-borde"
+      className="h-3 w-full overflow-hidden rounded-full bg-borde/70"
     >
       <div
         className="h-full rounded-full bg-mostaza transition-[width] duration-300 motion-reduce:transition-none"
@@ -39,7 +39,7 @@ export default function ProgresoLectura({
         {percent !== null && (
           <Barra percent={percent} label={`Progreso de ${book.title}`} />
         )}
-        <p className="text-xs text-crema-suave">
+        <p className="text-xs text-suave">
           {summary}
           {percent !== null && book.pages ? ` · ${percent}%` : ""}
         </p>
@@ -53,11 +53,11 @@ export default function ProgresoLectura({
     <div className="flex flex-col gap-2.5">
       <div className="flex flex-col gap-1.5">
         <div className="flex items-end justify-between gap-3">
-          <p aria-live="polite" className="text-[13px] text-crema-suave">
+          <p aria-live="polite" className="text-[13px] text-suave">
             {summary}
           </p>
           {percent !== null && (
-            <p className="font-display text-2xl font-extrabold leading-none text-mostaza">
+            <p className="font-display text-2xl font-extrabold leading-none text-ladrillo">
               {percent}%
             </p>
           )}
@@ -70,7 +70,7 @@ export default function ProgresoLectura({
       <ActualizarProgreso book={book} />
 
       {finished && (
-        <p className="text-[13px] font-bold text-mostaza">
+        <p className="text-[13px] font-bold text-ladrillo">
           ¡Llegaste al final! Tocá “Lo terminé” para pasarlo a Leídos.
         </p>
       )}

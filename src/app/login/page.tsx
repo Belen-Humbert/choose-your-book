@@ -2,7 +2,7 @@ import Link from "next/link";
 import { signInWithEmail, signInWithGoogle, signUpWithEmail } from "./actions";
 
 const inputClass =
-  "h-12 w-full rounded-xl border-0 bg-crema px-4 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza";
+  "h-12 w-full rounded-xl border border-borde bg-crema px-4 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo";
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const params = await searchParams;
@@ -13,10 +13,10 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 px-5 py-12">
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-mostaza">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-ladrillo">
           Choose Your Book
         </p>
-        <h1 className="mt-2 font-display text-5xl font-extrabold leading-[1.02] text-crema">
+        <h1 className="mt-2 font-display text-5xl font-extrabold leading-[1.02] text-tinta">
           {crear ? (
             <>
               Creá tu
@@ -36,7 +36,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       {error && (
         <p
           role="alert"
-          className="rounded-xl border border-ladrillo bg-ladrillo/25 px-4 py-3 text-sm text-crema"
+          className="rounded-xl border border-ladrillo bg-ladrillo/25 px-4 py-3 text-sm text-tinta"
         >
           {error}
         </p>
@@ -44,7 +44,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       {mensaje && (
         <p
           role="status"
-          className="rounded-xl border border-petroleo bg-petroleo/30 px-4 py-3 text-sm text-crema"
+          className="rounded-xl border border-petroleo bg-petroleo/30 px-4 py-3 text-sm text-tinta"
         >
           {mensaje}
         </p>
@@ -53,7 +53,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       <form action={signInWithGoogle}>
         <button
           type="submit"
-          className="flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl bg-crema text-base font-bold text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+          className="flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl bg-crema text-base font-bold text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
         >
           <span
             aria-hidden="true"
@@ -65,7 +65,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         </button>
       </form>
 
-      <div className="flex items-center gap-3 text-sm text-crema-suave">
+      <div className="flex items-center gap-3 text-sm text-suave">
         <span className="h-px flex-1 bg-borde" />
         o con email
         <span className="h-px flex-1 bg-borde" />
@@ -75,7 +75,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         action={crear ? signUpWithEmail : signInWithEmail}
         className="flex flex-col gap-4"
       >
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-crema-suave">
+        <label className="flex flex-col gap-1.5 text-sm font-medium text-suave">
           Email
           <input
             name="email"
@@ -86,7 +86,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
             className={inputClass}
           />
         </label>
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-crema-suave">
+        <label className="flex flex-col gap-1.5 text-sm font-medium text-suave">
           Contraseña
           <input
             name="password"
@@ -99,17 +99,17 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         </label>
         <button
           type="submit"
-          className="mt-1 h-[60px] cursor-pointer rounded-2xl bg-mostaza text-lg font-bold text-tinta shadow-[0_4px_0_#9a6f10] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema"
+          className="mt-1 h-[60px] cursor-pointer rounded-2xl bg-ladrillo text-lg font-bold text-crema shadow-[0_4px_0_#6f2f18] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-tinta"
         >
           {crear ? "Crear cuenta" : "Entrar"}
         </button>
       </form>
 
-      <p className="text-center text-sm text-crema-suave">
+      <p className="text-center text-sm text-suave">
         {crear ? "¿Ya tenés cuenta? " : "¿Todavía no tenés cuenta? "}
         <Link
           href={crear ? "/login" : "/login?modo=crear"}
-          className="font-bold text-mostaza underline"
+          className="font-bold text-ladrillo underline"
         >
           {crear ? "Entrá" : "Creala"}
         </Link>

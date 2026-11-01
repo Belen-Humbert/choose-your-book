@@ -33,27 +33,27 @@ export default function BookRow({ book }: { book: Book }) {
         {/* Tocar el libro abre su detalle, con las notas */}
         <Link
           href={`/pila/${book.id}`}
-          className="flex min-w-0 flex-1 items-start gap-3 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+          className="flex min-w-0 flex-1 items-start gap-3 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
         >
           <BookCover book={book} variant="row" />
 
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <p className="font-display text-[17px] font-extrabold leading-[1.1] text-crema">
+            <p className="font-display text-[17px] font-extrabold leading-[1.1] text-tinta">
               {book.title}
             </p>
             {book.author && (
-              <p className="text-[13px] text-crema-suave">{book.author}</p>
+              <p className="text-[13px] text-suave">{book.author}</p>
             )}
             <div className="mt-1 flex flex-wrap items-center gap-2">
               {book.status === "leido" && book.finished_at && (
-                <span className="text-xs text-crema-suave">
+                <span className="text-xs text-suave">
                   Terminado el <FechaHora iso={book.finished_at} soloFecha />
                 </span>
               )}
               {book.status === "leido" && <EstrellasLectura rating={book.rating ?? null} />}
-              {meta && <span className="text-xs text-crema-suave">{meta}</span>}
+              {meta && <span className="text-xs text-suave">{meta}</span>}
             </div>
-            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-bold text-mostaza">
+            <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-bold text-ladrillo">
               Ver notas
               <svg
                 aria-hidden="true"
@@ -77,7 +77,7 @@ export default function BookRow({ book }: { book: Book }) {
           <button
             type="submit"
             aria-label={`Quitar ${book.title} de la pila`}
-            className="flex size-11 cursor-pointer items-center justify-center rounded-full text-crema-suave focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+            className="flex size-11 cursor-pointer items-center justify-center rounded-full text-suave focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
           >
             <svg
               aria-hidden="true"
@@ -107,10 +107,10 @@ export default function BookRow({ book }: { book: Book }) {
             <input type="hidden" name="status" value={action.to} />
             <button
               type="submit"
-              className={`h-11 cursor-pointer rounded-full border-[1.5px] px-4 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza ${
+              className={`h-11 cursor-pointer rounded-full border-[1.5px] px-4 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo ${
                 action.to === "pendiente"
-                  ? "border-borde font-medium text-crema-suave"
-                  : "border-mostaza bg-mostaza font-bold text-tinta"
+                  ? "border-borde font-medium text-suave"
+                  : "border-ladrillo bg-ladrillo font-bold text-crema"
               }`}
             >
               {action.label}

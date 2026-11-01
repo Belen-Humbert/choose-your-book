@@ -58,9 +58,10 @@ export default function DetalleLibro({
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-5 py-6">
+      <div className="-mx-5 -mt-6 flex flex-col gap-3 rounded-b-[28px] bg-petroleo px-5 pb-5 pt-3">
       <Link
         href={`/pila?estado=${book.status === "pendiente" ? "pendiente" : book.status}`}
-        className="inline-flex min-h-11 items-center gap-1 self-start text-sm font-bold text-mostaza focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+        className="inline-flex min-h-11 items-center gap-1 self-start text-sm font-bold text-oro focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
       >
         <svg
           aria-hidden="true"
@@ -81,7 +82,7 @@ export default function DetalleLibro({
       <header className="flex gap-4">
         <BookCover book={book} variant="winner" />
         <div className="flex min-w-0 flex-col justify-center gap-1.5">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-mostaza">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-oro">
             {STATUS_LABEL[book.status]}
           </p>
           <h1 className="font-display text-3xl font-extrabold leading-[1.05] text-crema">
@@ -90,7 +91,7 @@ export default function DetalleLibro({
           {book.author && (
             <p className="text-[15px] text-crema-suave">{book.author}</p>
           )}
-          <FormatoLibro book={book} always />
+          <FormatoLibro book={book} always onDark />
           <div className="flex flex-wrap items-center gap-2">
             {meta && <span className="text-xs text-crema-suave">{meta}</span>}
           </div>
@@ -101,12 +102,13 @@ export default function DetalleLibro({
           )}
           <Link
             href={`/pila/${book.id}/editar`}
-            className="inline-flex min-h-11 items-center self-start text-sm font-bold text-mostaza underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+            className="inline-flex min-h-11 items-center self-start text-sm font-bold text-oro underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
           >
             Editar libro
           </Link>
         </div>
       </header>
+      </div>
 
       {book.status === "leyendo" && (
         <section
@@ -122,7 +124,7 @@ export default function DetalleLibro({
           aria-label="Mi calificación"
           className="flex flex-col gap-1 rounded-[14px] border border-borde bg-panel p-3.5"
         >
-          <p className="text-sm font-medium text-crema-suave">
+          <p className="text-sm font-medium text-suave">
             {book.rating ? "Tu calificación" : "¿Cuántas estrellas le pondrías?"}
           </p>
           <EstrellasEditables bookId={book.id} rating={book.rating ?? null} />
@@ -132,11 +134,11 @@ export default function DetalleLibro({
       <section aria-labelledby="notas-titulo" className="flex flex-col gap-3">
         <h2
           id="notas-titulo"
-          className="font-display text-2xl font-extrabold text-crema"
+          className="font-display text-2xl font-extrabold text-tinta"
         >
           Notas
           {notes.length > 0 && (
-            <span className="ml-2 text-base font-bold text-crema-suave">
+            <span className="ml-2 text-base font-bold text-suave">
               {notes.length}
             </span>
           )}
@@ -145,14 +147,14 @@ export default function DetalleLibro({
         {error && (
           <p
             role="alert"
-            className="rounded-xl border border-ladrillo bg-ladrillo/25 px-4 py-3 text-sm text-crema"
+            className="rounded-xl border border-ladrillo bg-ladrillo/25 px-4 py-3 text-sm text-tinta"
           >
             {error}
           </p>
         )}
 
         {book.status === "leyendo" ? (
-          <p className="text-sm text-crema-suave">
+          <p className="text-sm text-suave">
             Para dejar una nota, tocá “Actualizar progreso” más arriba: queda
             guardada con la fecha, la hora y la página o el porcentaje en que
             ibas.
@@ -162,7 +164,7 @@ export default function DetalleLibro({
             <input type="hidden" name="book_id" value={book.id} />
             <label
               htmlFor="nota"
-              className="text-sm font-medium text-crema-suave"
+              className="text-sm font-medium text-suave"
             >
               Nueva nota
             </label>
@@ -173,16 +175,16 @@ export default function DetalleLibro({
               maxLength={NOTE_MAX_LENGTH}
               rows={4}
               placeholder="¿Qué te pareció? Una frase, una duda, una cita…"
-              className="min-h-28 w-full resize-y rounded-xl border-0 bg-crema p-3 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+              className="min-h-28 w-full resize-y rounded-xl border border-borde bg-crema p-3 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
             />
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="min-w-0 flex-1 text-xs text-crema-suave">
+              <p className="min-w-0 flex-1 text-xs text-suave">
                 Se guarda con la fecha y la hora
                 {nowLabel ? ` y el punto en que vas (${nowLabel})` : ""}.
               </p>
               <button
                 type="submit"
-                className="h-12 cursor-pointer rounded-full bg-mostaza px-6 text-base font-bold text-tinta shadow-[0_3px_0_#9a6f10] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema"
+                className="h-12 cursor-pointer rounded-full bg-ladrillo px-6 text-base font-bold text-crema shadow-[0_3px_0_#6f2f18] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-tinta"
               >
                 Guardar nota
               </button>
@@ -193,12 +195,12 @@ export default function DetalleLibro({
         {notesFailed ? (
           <p
             role="alert"
-            className="rounded-xl border border-ladrillo bg-ladrillo/25 px-4 py-3 text-sm text-crema"
+            className="rounded-xl border border-ladrillo bg-ladrillo/25 px-4 py-3 text-sm text-tinta"
           >
             No pudimos cargar las notas. Probá de nuevo en un rato.
           </p>
         ) : notes.length === 0 ? (
-          <p className="rounded-[14px] border border-dashed border-borde p-4 text-sm text-crema-suave">
+          <p className="rounded-[14px] border border-dashed border-borde p-4 text-sm text-suave">
             Todavía no escribiste notas. Anotá lo que te va pasando mientras
             leés y queda guardado acá.
           </p>
@@ -210,7 +212,7 @@ export default function DetalleLibro({
                 className="flex flex-col gap-2 rounded-[14px] border border-borde bg-panel p-3.5"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-crema-suave">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-suave">
                     <FechaHora iso={note.created_at} />
                     <PosicionNota note={note} pages={book.pages} />
                   </div>
@@ -219,7 +221,7 @@ export default function DetalleLibro({
                     <Link
                       href={`/pila/${book.id}?editar=${note.id}`}
                       aria-label="Editar esta nota"
-                      className="flex size-11 items-center justify-center rounded-full text-crema-suave focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+                      className="flex size-11 items-center justify-center rounded-full text-suave focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
                     >
                       <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4zM13.5 6.5l4 4" />
@@ -232,7 +234,7 @@ export default function DetalleLibro({
                     <button
                       type="submit"
                       aria-label="Borrar esta nota"
-                      className="-mr-2 flex size-11 cursor-pointer items-center justify-center rounded-full text-crema-suave focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+                      className="-mr-2 flex size-11 cursor-pointer items-center justify-center rounded-full text-suave focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
                     >
                       <svg
                         aria-hidden="true"
@@ -266,25 +268,25 @@ export default function DetalleLibro({
                       rows={4}
                       maxLength={NOTE_MAX_LENGTH}
                       defaultValue={note.body}
-                      className="min-h-28 w-full resize-y rounded-xl border-0 bg-crema p-3 text-base text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+                      className="min-h-28 w-full resize-y rounded-xl border border-borde bg-crema p-3 text-base text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
                     />
                     <div className="flex items-center justify-end gap-2">
                       <Link
                         href={`/pila/${book.id}`}
-                        className="inline-flex h-11 items-center px-4 text-sm font-medium text-crema-suave underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+                        className="inline-flex h-11 items-center px-4 text-sm font-medium text-suave underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
                       >
                         Cancelar
                       </Link>
                       <button
                         type="submit"
-                        className="h-11 cursor-pointer rounded-full bg-mostaza px-5 text-sm font-bold text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
+                        className="h-11 cursor-pointer rounded-full bg-ladrillo px-5 text-sm font-bold text-crema focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tinta"
                       >
                         Guardar cambios
                       </button>
                     </div>
                   </form>
                 ) : (
-                  <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-crema">
+                  <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-tinta">
                     {note.body}
                   </p>
                 )}

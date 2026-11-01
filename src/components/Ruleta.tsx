@@ -16,13 +16,13 @@ const SPINE_HEIGHTS = [72, 84, 60, 78, 66, 88, 70, 62];
 const SPINE_ROTATIONS = [1, -1, 2, -2, 1, -1, 2, -1];
 
 const chipBase =
-  "inline-flex h-11 shrink-0 cursor-pointer items-center rounded-full border-[1.5px] px-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza";
-const chipOff = "border-borde font-medium text-crema";
+  "inline-flex h-11 shrink-0 cursor-pointer items-center rounded-full border-[1.5px] px-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo";
+const chipOff = "border-borde font-medium text-tinta";
 const chipOnTeal = "border-petroleo bg-petroleo font-bold text-crema";
-const chipOnRed = "border-ladrillo bg-ladrillo font-bold text-crema";
+const chipOnRed = "border-mostaza bg-mostaza font-bold text-tinta";
 
 const sectionLabel =
-  "text-xs font-bold uppercase tracking-widest text-crema-suave";
+  "text-xs font-bold uppercase tracking-widest text-suave";
 
 // Qué lomos dibujar en la pila: hasta MAX_SPINES, y siempre incluye al elegido.
 function pickShown(matches: Book[], winnerId: string | null) {
@@ -127,15 +127,15 @@ export default function Ruleta({ books }: { books: Book[] }) {
   if (books.length === 0) {
     return (
       <div className="flex flex-col items-start gap-4 rounded-[14px] border border-borde bg-panel p-5">
-        <p className="font-display text-2xl font-extrabold text-crema">
+        <p className="font-display text-2xl font-extrabold text-tinta">
           Tu pila está vacía
         </p>
-        <p className="text-sm text-crema-suave">
+        <p className="text-sm text-suave">
           Sumá algunos libros y la ruleta elige por vos.
         </p>
         <Link
           href="/pila/nueva"
-          className="inline-flex h-12 items-center rounded-2xl bg-mostaza px-5 text-base font-bold text-tinta shadow-[0_4px_0_#9a6f10] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema"
+          className="inline-flex h-12 items-center rounded-2xl bg-ladrillo px-5 text-base font-bold text-crema shadow-[0_4px_0_#6f2f18] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-tinta"
         >
           Agregar un libro
         </Link>
@@ -219,7 +219,7 @@ export default function Ruleta({ books }: { books: Book[] }) {
             <label htmlFor="max-pages" className={sectionLabel}>
               Páginas
             </label>
-            <span className="text-sm font-bold text-mostaza">
+            <span className="text-sm font-bold text-ladrillo">
               {maxPages >= PAGES_MAX ? "sin límite" : `hasta ${maxPages}`}
             </span>
           </div>
@@ -236,7 +236,7 @@ export default function Ruleta({ books }: { books: Book[] }) {
             }}
             className="h-6 w-full cursor-pointer accent-mostaza"
           />
-          <div className="flex justify-between text-xs text-crema-suave">
+          <div className="flex justify-between text-xs text-suave">
             <span>{PAGES_MIN}</span>
             <span>{PAGES_MAX}+</span>
           </div>
@@ -270,10 +270,10 @@ export default function Ruleta({ books }: { books: Book[] }) {
           })}
         </div>
         <div className="pb-1">
-          <p className="font-display text-2xl font-extrabold leading-[1.1] text-crema">
+          <p className="font-display text-2xl font-extrabold leading-[1.1] text-tinta">
             {matches.length} {matches.length === 1 ? "libro" : "libros"}
           </p>
-          <p className="text-sm text-crema-suave">
+          <p className="text-sm text-suave">
             {matches.length === 1 ? "cumple" : "cumplen"} tus filtros
           </p>
         </div>
@@ -283,7 +283,7 @@ export default function Ruleta({ books }: { books: Book[] }) {
         type="button"
         onClick={spin}
         disabled={matches.length === 0 || spinning}
-        className="flex h-[60px] cursor-pointer items-center justify-center gap-2.5 rounded-2xl bg-mostaza text-lg font-bold text-tinta shadow-[0_4px_0_#9a6f10] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex h-[60px] cursor-pointer items-center justify-center gap-2.5 rounded-2xl bg-ladrillo text-lg font-bold text-crema shadow-[0_4px_0_#6f2f18] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-tinta disabled:cursor-not-allowed disabled:opacity-50"
       >
         <svg
           aria-hidden="true"
@@ -338,11 +338,11 @@ export default function Ruleta({ books }: { books: Book[] }) {
             </div>
           </section>
         ) : matches.length === 0 ? (
-          <p className="text-center text-sm text-crema-suave">
+          <p className="text-center text-sm text-suave">
             Ningún libro cumple estos filtros. Probá aflojar alguno.
           </p>
         ) : !spinning ? (
-          <p className="text-center text-sm text-crema-suave">
+          <p className="text-center text-sm text-suave">
             Ajustá los filtros y girá la pila.
           </p>
         ) : null}

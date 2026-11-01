@@ -50,18 +50,18 @@ export default function CompletarDatos({ ids }: { ids: string[] }) {
       className="flex flex-col gap-2 rounded-[14px] border border-borde bg-panel p-3.5"
     >
       {finished ? (
-        <p role="status" className="text-sm text-crema">
+        <p role="status" className="text-sm text-tinta">
           Listo: completamos {updated} de {done} libros. Los que no encontramos quedan como
           estaban.
         </p>
       ) : (
-        <p className="text-sm text-crema-suave">
+        <p className="text-sm text-suave">
           {ids.length} libros no tienen género o portada. Podemos buscarlos por vos (el género
           sirve para filtrar en la ruleta).
         </p>
       )}
       {running && (
-        <p role="status" className="text-xs text-crema-suave">
+        <p role="status" className="text-xs text-suave">
           Buscando… {done} de {ids.length}
         </p>
       )}
@@ -69,7 +69,7 @@ export default function CompletarDatos({ ids }: { ids: string[] }) {
         <button
           type="button"
           onClick={running ? () => (cancel.current = true) : start}
-          className="h-11 cursor-pointer rounded-full border-[1.5px] border-mostaza px-4 text-sm font-bold text-mostaza focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+          className="h-11 cursor-pointer rounded-full border-[1.5px] border-ladrillo px-4 text-sm font-bold text-ladrillo focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
         >
           {running ? "Detener" : finished ? "Buscar de nuevo" : "Completar datos"}
         </button>

@@ -9,9 +9,9 @@ import BuscadorLibros from "./BuscadorLibros";
 import SubirPortada from "./SubirPortada";
 
 const fieldClass =
-  "h-12 w-full rounded-xl border-0 bg-crema px-4 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza";
+  "h-12 w-full rounded-xl border border-borde bg-crema px-4 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo";
 
-const labelClass = "flex flex-col gap-1.5 text-sm font-medium text-crema-suave";
+const labelClass = "flex flex-col gap-1.5 text-sm font-medium text-suave";
 
 export default function FormularioLibro() {
   const [title, setTitle] = useState("");
@@ -44,7 +44,7 @@ export default function FormularioLibro() {
     <div className="flex flex-col gap-5">
       <BuscadorLibros onSelect={applySuggestion} />
 
-      <div className="flex items-center gap-3 text-sm text-crema-suave">
+      <div className="flex items-center gap-3 text-sm text-suave">
         <span className="h-px flex-1 bg-borde" />
         {googleBooksId ? "revisá los datos" : "o cargalo a mano"}
         <span className="h-px flex-1 bg-borde" />
@@ -56,13 +56,13 @@ export default function FormularioLibro() {
 
         {googleBooksId && (
           <div className="flex items-center gap-3 rounded-xl border border-petroleo bg-petroleo/25 p-2.5">
-            <p className="min-w-0 flex-1 text-sm text-crema">
+            <p className="min-w-0 flex-1 text-sm text-tinta">
               Libro elegido de la búsqueda. Podés corregir lo que quieras.
             </p>
             <button
               type="button"
               onClick={clearSuggestion}
-              className="h-11 shrink-0 cursor-pointer rounded-full border-[1.5px] border-borde px-3 text-sm font-medium text-crema focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+              className="h-11 shrink-0 cursor-pointer rounded-full border-[1.5px] border-borde px-3 text-sm font-medium text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
             >
               Quitar
             </button>
@@ -132,24 +132,24 @@ export default function FormularioLibro() {
         </label>
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="text-sm font-medium text-crema-suave">
+          <legend className="text-sm font-medium text-suave">
             ¿En qué formato lo vas a leer? (opcional)
           </legend>
           <div className="flex gap-2">
             <label className="cursor-pointer">
               <input type="checkbox" name="digital" className="peer sr-only" />
-              <span className="inline-flex h-11 items-center rounded-full border-[1.5px] border-borde px-4 text-sm font-medium text-crema peer-checked:border-petroleo peer-checked:bg-petroleo peer-checked:font-bold peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-mostaza">
+              <span className="inline-flex h-11 items-center rounded-full border-[1.5px] border-borde px-4 text-sm font-medium text-crema peer-checked:border-petroleo peer-checked:bg-petroleo peer-checked:font-bold peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-petroleo">
                 Digital
               </span>
             </label>
             <label className="cursor-pointer">
               <input type="checkbox" name="fisico" className="peer sr-only" />
-              <span className="inline-flex h-11 items-center rounded-full border-[1.5px] border-borde px-4 text-sm font-medium text-crema peer-checked:border-mostaza peer-checked:bg-mostaza peer-checked:font-bold peer-checked:text-tinta peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-mostaza">
+              <span className="inline-flex h-11 items-center rounded-full border-[1.5px] border-borde px-4 text-sm font-medium text-tinta peer-checked:border-mostaza peer-checked:bg-mostaza peer-checked:font-bold peer-checked:text-tinta peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-petroleo">
                 Físico
               </span>
             </label>
           </div>
-          <p className="text-xs text-crema-suave">
+          <p className="text-xs text-suave">
             Si todavía no lo sabés, dejalo sin marcar y lo elegís después en Mi pila.
           </p>
         </fieldset>
@@ -157,14 +157,14 @@ export default function FormularioLibro() {
         <button
           type="submit"
           disabled={uploading}
-          className="mt-1 h-[60px] cursor-pointer rounded-2xl bg-mostaza text-lg font-bold text-tinta shadow-[0_4px_0_#9a6f10] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-1 h-[60px] cursor-pointer rounded-2xl bg-ladrillo text-lg font-bold text-crema shadow-[0_4px_0_#6f2f18] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-tinta disabled:cursor-not-allowed disabled:opacity-60"
         >
           {uploading ? "Subiendo portada…" : "Agregar a mi pila"}
         </button>
 
         <Link
           href="/pila"
-          className="text-center text-sm font-medium text-crema-suave underline"
+          className="text-center text-sm font-medium text-suave underline"
         >
           Cancelar
         </Link>

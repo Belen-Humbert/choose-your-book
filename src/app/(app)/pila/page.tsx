@@ -57,7 +57,7 @@ function buildHref(
 }
 
 const chip =
-  "inline-flex h-11 items-center rounded-full border-[1.5px] px-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza";
+  "inline-flex h-11 items-center rounded-full border-[1.5px] px-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo";
 
 export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
   if (!hasSupabaseEnv) {
@@ -130,8 +130,8 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-5 py-6">
-      <div>
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-mostaza">
+      <div className="-mx-5 -mt-6 rounded-b-[28px] bg-petroleo px-5 pb-5 pt-6">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-oro">
           Mi pila
         </p>
         <h1 className="mt-1.5 font-display text-5xl font-extrabold leading-[1.02] text-crema">
@@ -140,7 +140,7 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
       </div>
 
       {Number.isFinite(imported) && (
-        <p role="status" className="rounded-xl border border-mostaza bg-mostaza/15 px-4 py-3 text-sm text-crema">
+        <p role="status" className="rounded-xl border border-mostaza bg-mostaza/15 px-4 py-3 text-sm text-tinta">
           Importamos {imported} {imported === 1 ? "libro" : "libros"}
           {repeated > 0 ? ` y salteamos ${repeated} que ya tenías` : ""}.
         </p>
@@ -157,7 +157,7 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
               className={`${chip} ${
                 active
                   ? "border-petroleo bg-petroleo font-bold text-crema"
-                  : "border-borde font-medium text-crema"
+                  : "border-borde font-medium text-tinta"
               }`}
             >
               {t.label}
@@ -183,22 +183,22 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
             defaultValue={q}
             maxLength={100}
             placeholder="Buscar por título o autor"
-            className="h-11 min-w-0 flex-1 rounded-full border-0 bg-crema px-4 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+            className="h-11 min-w-0 flex-1 rounded-full border border-borde bg-crema px-4 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
           />
           <button
             type="submit"
-            className="h-11 cursor-pointer rounded-full bg-mostaza px-5 text-sm font-bold text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
+            className="h-11 cursor-pointer rounded-full bg-ladrillo px-5 text-sm font-bold text-crema focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tinta"
           >
             Buscar
           </button>
         </div>
-        <div className="flex items-center gap-2 text-sm text-crema-suave">
+        <div className="flex items-center gap-2 text-sm text-suave">
           <label htmlFor="orden">Ordenar</label>
           <select
             id="orden"
             name="orden"
             defaultValue={orden}
-            className="h-11 rounded-full border-0 bg-crema px-3 text-sm text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+            className="h-11 rounded-full border border-borde bg-crema px-3 text-sm text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
           >
             <option value="nuevos">
               {tab.status === "leido" ? "Terminados hace poco primero" : "Agregados hace poco primero"}
@@ -215,13 +215,13 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
           </select>
         </div>
         {tab.status === "leido" && (
-          <div className="flex items-center gap-2 text-sm text-crema-suave">
+          <div className="flex items-center gap-2 text-sm text-suave">
             <label htmlFor="estrellas">Calificación</label>
             <select
               id="estrellas"
               name="estrellas"
               defaultValue={estrellas ?? ""}
-              className="h-11 rounded-full border-0 bg-crema px-3 text-sm text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+              className="h-11 rounded-full border border-borde bg-crema px-3 text-sm text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
             >
               <option value="">Todas</option>
               <option value="5">5 estrellas</option>
@@ -236,7 +236,7 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
         {(q || orden !== "nuevos" || estrellas) && (
           <Link
             href={buildHref(tab.param, formato, "", "nuevos")}
-            className="inline-flex min-h-11 items-center self-start text-sm font-bold text-mostaza underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+            className="inline-flex min-h-11 items-center self-start text-sm font-bold text-ladrillo underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
           >
             Limpiar búsqueda
           </Link>
@@ -254,7 +254,7 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
               className={`${chip} ${
                 active
                   ? "border-mostaza bg-mostaza font-bold text-tinta"
-                  : "border-borde font-medium text-crema"
+                  : "border-borde font-medium text-tinta"
               }`}
             >
               {f.label}
@@ -266,7 +266,7 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
       {error && (
         <p
           role="alert"
-          className="rounded-xl border border-ladrillo bg-ladrillo/25 px-4 py-3 text-sm text-crema"
+          className="rounded-xl border border-ladrillo bg-ladrillo/25 px-4 py-3 text-sm text-tinta"
         >
           No pudimos cargar tu pila. Probá de nuevo en un rato.
         </p>
@@ -281,14 +281,14 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
       ) : (
         !error && (
           <div className="flex flex-col items-start gap-4 rounded-[14px] border border-borde bg-panel p-5">
-            <p className="font-display text-2xl font-extrabold text-crema">
+            <p className="font-display text-2xl font-extrabold text-tinta">
               {q
                 ? `Ningún libro coincide con “${q}”`
                 : formato
                   ? "No hay libros con ese formato"
                   : EMPTY[tab.status].title}
             </p>
-            <p className="text-sm text-crema-suave">
+            <p className="text-sm text-suave">
               {q || formato
                 ? "Probá con otra palabra o con otro filtro."
                 : EMPTY[tab.status].text}
@@ -296,7 +296,7 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
             {tab.status === "pendiente" && !formato && !q && (
               <Link
                 href="/pila/nueva"
-                className="inline-flex h-12 items-center rounded-2xl bg-mostaza px-5 text-base font-bold text-tinta shadow-[0_4px_0_#9a6f10] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema"
+                className="inline-flex h-12 items-center rounded-2xl bg-ladrillo px-5 text-base font-bold text-crema shadow-[0_4px_0_#6f2f18] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-tinta"
               >
                 Agregar un libro
               </Link>

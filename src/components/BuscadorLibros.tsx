@@ -73,7 +73,7 @@ export default function BuscadorLibros({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={inputId}
-        className="text-sm font-medium text-crema-suave"
+        className="text-sm font-medium text-suave"
       >
         Buscá tu libro
       </label>
@@ -101,18 +101,18 @@ export default function BuscadorLibros({
           placeholder="Título, autor o ISBN"
           autoComplete="off"
           maxLength={100}
-          className="h-12 w-full rounded-xl border-0 bg-crema pl-11 pr-4 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+          className="h-12 w-full rounded-xl border border-borde bg-crema pl-11 pr-4 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
         />
       </div>
 
-      <p aria-live="polite" className="text-xs text-crema-suave">
+      <p aria-live="polite" className="text-xs text-suave">
         {!active && "Elegí un resultado y se completan portada, páginas y género."}
         {active && status === "loading" && "Buscando…"}
         {active && status === "error" && (
           <>
             No pudimos buscar ahora. Podés cargar el libro a mano acá abajo.
             {errorDetail && (
-              <span className="mt-1 block text-crema-suave/80">
+              <span className="mt-1 block text-suave/80">
                 Motivo: {errorDetail}
               </span>
             )}
@@ -131,7 +131,7 @@ export default function BuscadorLibros({
               <button
                 type="button"
                 onClick={() => choose(result)}
-                className="flex min-h-[72px] w-full cursor-pointer items-center gap-3 rounded-xl border border-borde bg-panel p-2 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+                className="flex min-h-[72px] w-full cursor-pointer items-center gap-3 rounded-xl border border-borde bg-panel p-2 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
               >
                 {result.coverUrl ? (
                   <Image
@@ -149,15 +149,15 @@ export default function BuscadorLibros({
                   />
                 )}
                 <span className="flex min-w-0 flex-col">
-                  <span className="font-display text-base font-extrabold leading-tight text-crema">
+                  <span className="font-display text-base font-extrabold leading-tight text-tinta">
                     {result.title}
                   </span>
                   {result.author && (
-                    <span className="text-[13px] text-crema-suave">
+                    <span className="text-[13px] text-suave">
                       {result.author}
                     </span>
                   )}
-                  <span className="text-xs text-crema-suave">
+                  <span className="text-xs text-suave">
                     {[result.genre, result.pages ? `${result.pages} págs` : null]
                       .filter(Boolean)
                       .join(" · ")}

@@ -5,7 +5,7 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 ## Stack
 
 - Next.js (App Router) + TypeScript
-- Tailwind CSS (paleta y tipografías "pila de libros": Fraunces + DM Sans)
+- Tailwind CSS (paleta "Mezcla": fondo crema, verde profundo, terracota y mostaza; tipografías Fraunces + DM Sans). Los colores están en un solo lugar: `src/app/globals.css`
 - Supabase: login con email y Google, base de datos Postgres con seguridad por usuario
 
 ## Cómo correrlo

@@ -104,7 +104,7 @@ export default function ActualizarProgreso({ book }: { book: BookProgress }) {
         ref={triggerRef}
         type="button"
         onClick={openPanel}
-        className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-full border-[1.5px] border-mostaza text-[15px] font-bold text-mostaza focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+        className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-full border-[1.5px] border-ladrillo text-[15px] font-bold text-ladrillo focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
       >
         <svg
           aria-hidden="true"
@@ -148,7 +148,7 @@ export default function ActualizarProgreso({ book }: { book: BookProgress }) {
         if (event.key === "Escape") closePanel();
       }}
       aria-label="Actualizar progreso"
-      className="flex flex-col gap-3 rounded-2xl bg-crema p-3.5 text-tinta"
+      className="flex flex-col gap-3 rounded-2xl bg-fondo p-3.5 text-tinta"
     >
       <input type="hidden" name="id" value={book.id} />
       <input type="hidden" name="mode" value={mode} />

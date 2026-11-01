@@ -24,7 +24,7 @@ export function EstrellasLectura({ rating }: { rating: number | null }) {
     <span
       role="img"
       aria-label={`${rating} de 5 estrellas`}
-      className="inline-flex items-center gap-0.5 text-mostaza"
+      className="inline-flex items-center gap-0.5 text-estrella"
     >
       {[1, 2, 3, 4, 5].map((n) => (
         <Estrella key={n} llena={n <= rating} size={14} />
@@ -52,7 +52,7 @@ export function EstrellasEditables({
           value={rating === n ? 0 : n}
           aria-label={rating === n ? `Quitar la calificación de ${n} estrellas` : `${n} ${n === 1 ? "estrella" : "estrellas"}`}
           aria-pressed={rating === n}
-          className="flex size-11 cursor-pointer items-center justify-center rounded-full text-mostaza focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+          className="flex size-11 cursor-pointer items-center justify-center rounded-full text-estrella focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
         >
           <Estrella llena={rating !== null && n <= rating} size={28} />
         </button>

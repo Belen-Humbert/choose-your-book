@@ -8,6 +8,8 @@ type Props = {
   book: Pick<Book, "id" | "title" | "status" | "has_digital" | "has_physical">;
   // En el detalle del libro se ofrece elegir el formato en cualquier estado.
   always?: boolean;
+  // Se dibuja sobre el encabezado verde del detalle.
+  onDark?: boolean;
 };
 
 function IconoLibro() {
@@ -28,22 +30,26 @@ function IconoLector() {
 }
 
 const base =
-  "inline-flex h-11 cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] px-4 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza";
+  "inline-flex h-11 cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] px-4 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo";
 
 function Opcion({
   id,
   formato,
   activo,
   titulo,
+  onDark,
 }: {
   id: string;
   formato: "digital" | "fisico";
   activo: boolean;
   titulo: string;
+  onDark: boolean;
 }) {
   const digital = formato === "digital";
   const on = digital
-    ? "border-petroleo bg-petroleo font-bold text-crema"
+    ? onDark
+      ? "border-crema bg-crema font-bold text-petroleo"
+      : "border-petroleo bg-petroleo font-bold text-crema"
     : "border-mostaza bg-mostaza font-bold text-tinta";
   return (
     <form action={toggleFormat}>
@@ -53,7 +59,7 @@ function Opcion({
         type="submit"
         aria-pressed={activo}
         aria-label={`${digital ? "Digital" : "Físico"}: ${titulo}`}
-        className={`${base} ${activo ? on : "border-borde font-medium text-crema"}`}
+        className={`${base} ${activo ? on : onDark ? "border-crema-suave font-medium text-crema" : "border-borde font-medium text-tinta"}`}
       >
         {digital ? <IconoLector /> : <IconoLibro />}
         {digital ? "Digital" : "Físico"}
@@ -64,7 +70,7 @@ function Opcion({
 
 // Formato del libro. Sin formato (y por leer): dos botones con ícono para elegir con un toque,
 // se pueden marcar los dos. Con formato: la etiqueta de siempre; tocarla permite cambiarlo.
-export default function FormatoLibro({ book, always = false }: Props) {
+export default function FormatoLibro({ book, always = false, onDark = false }: Props) {
   const [editing, setEditing] = useState(false);
   const has = book.has_digital || book.has_physical;
 
@@ -76,10 +82,10 @@ export default function FormatoLibro({ book, always = false }: Props) {
         type="button"
         onClick={() => setEditing(true)}
         aria-label={`Cambiar el formato de ${book.title}`}
-        className="flex min-h-11 cursor-pointer flex-wrap items-center gap-2 self-start rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+        className="flex min-h-11 cursor-pointer flex-wrap items-center gap-2 self-start rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
       >
         {book.has_digital && (
-          <span className="rounded-[10px] bg-petroleo px-2.5 py-0.5 text-xs font-bold text-crema">Digital</span>
+          <span className={`rounded-[10px] px-2.5 py-0.5 text-xs font-bold ${onDark ? "bg-crema text-petroleo" : "bg-petroleo text-crema"}`}>Digital</span>
         )}
         {book.has_physical && (
           <span className="rounded-[10px] bg-mostaza px-2.5 py-0.5 text-xs font-bold text-tinta">Físico</span>
@@ -90,14 +96,14 @@ export default function FormatoLibro({ book, always = false }: Props) {
 
   return (
     <div role="group" aria-label="Formato" className="flex flex-wrap items-center gap-2">
-      {!has && <span className="text-xs text-crema-suave">¿Cómo lo vas a leer?</span>}
-      <Opcion id={book.id} formato="fisico" activo={book.has_physical} titulo={book.title} />
-      <Opcion id={book.id} formato="digital" activo={book.has_digital} titulo={book.title} />
+      {!has && <span className={`text-xs ${onDark ? "text-crema-suave" : "text-suave"}`}>¿Cómo lo vas a leer?</span>}
+      <Opcion id={book.id} formato="fisico" activo={book.has_physical} titulo={book.title} onDark={onDark} />
+      <Opcion id={book.id} formato="digital" activo={book.has_digital} titulo={book.title} onDark={onDark} />
       {has && (
         <button
           type="button"
           onClick={() => setEditing(false)}
-          className="h-11 cursor-pointer px-3 text-[13px] font-bold text-mostaza underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+          className={`h-11 cursor-pointer px-3 text-[13px] font-bold underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo ${onDark ? "text-oro" : "text-ladrillo"}`}
         >
           Listo
         </button>

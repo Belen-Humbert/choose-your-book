@@ -16,10 +16,10 @@ export default async function NuevaPage({
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-5 py-6">
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-mostaza">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-ladrillo">
           Agregar
         </p>
-        <h1 className="mt-1.5 font-display text-4xl font-extrabold leading-[1.05] text-crema">
+        <h1 className="mt-1.5 font-display text-4xl font-extrabold leading-[1.05] text-tinta">
           Sumá un libro
           <br />a tu pila
         </h1>
@@ -28,7 +28,7 @@ export default async function NuevaPage({
       {error && (
         <p
           role="alert"
-          className="rounded-xl border border-ladrillo bg-ladrillo/25 px-4 py-3 text-sm text-crema"
+          className="rounded-xl border border-ladrillo bg-ladrillo/25 px-4 py-3 text-sm text-tinta"
         >
           {error}
         </p>
@@ -38,7 +38,7 @@ export default async function NuevaPage({
 
       <Link
         href="/pila/importar"
-        className="inline-flex min-h-11 items-center self-start text-sm font-bold text-mostaza underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+        className="inline-flex min-h-11 items-center self-start text-sm font-bold text-ladrillo underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo"
       >
         ¿Ya tenés una lista en Goodreads? Importala
       </Link>

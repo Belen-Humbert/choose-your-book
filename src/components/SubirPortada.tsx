@@ -45,7 +45,7 @@ async function uploadCover(file: File): Promise<string> {
 }
 
 const buttonClass =
-  "inline-flex h-11 cursor-pointer items-center rounded-full border-[1.5px] px-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza";
+  "inline-flex h-11 cursor-pointer items-center rounded-full border-[1.5px] px-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo";
 
 export default function SubirPortada({
   coverUrl,
@@ -88,7 +88,7 @@ export default function SubirPortada({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm font-medium text-crema-suave">Portada</p>
+      <p className="text-sm font-medium text-suave">Portada</p>
       <div className="flex items-center gap-3">
         {coverUrl ? (
           <Image
@@ -102,7 +102,7 @@ export default function SubirPortada({
         ) : (
           <span
             aria-hidden="true"
-            className="flex h-[76px] w-[52px] shrink-0 items-center justify-center rounded-l-[3px] rounded-r-md border border-dashed border-borde text-xs text-crema-suave"
+            className="flex h-[76px] w-[52px] shrink-0 items-center justify-center rounded-l-[3px] rounded-r-md border border-dashed border-borde text-xs text-suave"
           >
             sin
           </span>
@@ -119,7 +119,7 @@ export default function SubirPortada({
           />
           <label
             htmlFor={inputId}
-            className={`${buttonClass} border-mostaza bg-mostaza font-bold text-tinta peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-crema peer-disabled:cursor-not-allowed peer-disabled:opacity-60`}
+            className={`${buttonClass} border-ladrillo bg-ladrillo font-bold text-crema peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-tinta peer-disabled:cursor-not-allowed peer-disabled:opacity-60`}
           >
             {uploading
               ? "Subiendo…"
@@ -134,7 +134,7 @@ export default function SubirPortada({
                 discardUploaded(coverUrl, savedUrl);
                 onChange(null);
               }}
-              className={`${buttonClass} border-borde font-medium text-crema-suave`}
+              className={`${buttonClass} border-borde font-medium text-suave`}
             >
               Quitar
             </button>
@@ -142,9 +142,9 @@ export default function SubirPortada({
         </div>
       </div>
 
-      <p aria-live="polite" className="text-xs text-crema-suave">
+      <p aria-live="polite" className="text-xs text-suave">
         {error ? (
-          <span role="alert" className="text-crema">
+          <span role="alert" className="text-tinta">
             {error}
           </span>
         ) : (

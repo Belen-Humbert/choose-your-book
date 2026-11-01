@@ -68,7 +68,7 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Principal"
-      className="sticky bottom-0 mt-auto bg-tinta pb-[max(1rem,env(safe-area-inset-bottom))] pt-2"
+      className="sticky bottom-0 mt-auto border-t border-borde bg-panel pb-[max(1rem,env(safe-area-inset-bottom))] pt-2"
     >
       <div className="mx-auto flex max-w-md justify-around px-5">
         {tabs.map((tab) => {
@@ -78,8 +78,8 @@ export default function BottomNav() {
               key={tab.id}
               href={tab.href}
               aria-current={active ? "page" : undefined}
-              className={`flex min-h-11 min-w-16 flex-col items-center gap-1 text-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza ${
-                active ? "font-bold text-mostaza" : "font-medium text-crema-suave"
+              className={`flex min-h-11 min-w-16 flex-col items-center gap-1 text-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petroleo ${
+                active ? "font-bold text-petroleo" : "font-medium text-suave"
               }`}
             >
               {tab.icon}
