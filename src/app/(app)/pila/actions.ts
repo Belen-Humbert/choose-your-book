@@ -265,7 +265,7 @@ export async function importGoodreads(formData: FormData) {
   const supabase = await createClient();
   const { data: existing, error: readError } = await supabase
     .from("books")
-    .select("id, title, author, created_at, finished_at");
+    .select("id, title, author, created_at, finished_at, rating");
   if (readError) {
     backToImport("No pudimos revisar tu pila. Probá de nuevo.");
   }
@@ -274,7 +274,7 @@ export async function importGoodreads(formData: FormData) {
   );
 
   const rows = [];
-  const redate: { id: string; changes: { created_at?: string; finished_at?: string } }[] = [];
+  const redate: { id: string; changes: { created_at?: string; finished_at?: string; rating?: number } }[] = [];
   let repeated = 0;
   for (const b of wanted) {
     const key = bookKey(b.title, b.author);
@@ -282,7 +282,7 @@ export async function importGoodreads(formData: FormData) {
     if (already) {
       repeated++;
       // Si ya estaba, le ponemos la fecha de Goodreads (así se ordena como allá).
-      const changes: { created_at?: string; finished_at?: string } = {};
+      const changes: { created_at?: string; finished_at?: string; rating?: number } = {};
       if (b.addedAt && Date.parse(already.created_at) !== Date.parse(b.addedAt)) {
         changes.created_at = b.addedAt;
       }
@@ -293,10 +293,13 @@ export async function importGoodreads(formData: FormData) {
       ) {
         changes.finished_at = b.readAt;
       }
+      if (b.status === "leido" && b.rating && already.rating !== b.rating) {
+        changes.rating = b.rating;
+      }
       if (Object.keys(changes).length > 0) redate.push({ id: already.id, changes });
       continue;
     }
-    seen.set(key, { id: "", title: b.title, author: b.author, created_at: "", finished_at: null });
+    seen.set(key, { id: "", title: b.title, author: b.author, created_at: "", finished_at: null, rating: null });
     const done = b.status === "leido" && b.pages;
     rows.push({
       title: b.title,
@@ -305,6 +308,7 @@ export async function importGoodreads(formData: FormData) {
       status: b.status,
       ...(b.addedAt ? { created_at: b.addedAt } : {}),
       ...(b.status === "leido" && b.readAt ? { finished_at: b.readAt } : {}),
+      ...(b.status === "leido" && b.rating ? { rating: b.rating } : {}),
       has_digital: b.format === "digital",
       has_physical: b.format === "fisico",
       current_page: done ? b.pages : 0,
@@ -488,4 +492,23 @@ export async function updateNote(formData: FormData) {
 
   revalidatePath(`/pila/${bookId}`);
   redirect(`/pila/${bookId}`);
+}
+
+// Pone o cambia las estrellas de un libro leído. 0 las quita.
+export async function setRating(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const rating = Number.parseInt(String(formData.get("rating") ?? ""), 10);
+  if (!isUuid(id) || !Number.isInteger(rating) || rating < 0 || rating > 5) return;
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("books")
+    .update({ rating: rating === 0 ? null : rating })
+    .eq("id", id);
+  if (error) {
+    backToBook(id, "No pudimos guardar la calificación. Probá de nuevo.");
+  }
+
+  revalidatePath("/pila");
+  revalidatePath("/pila/[id]", "page");
 }

@@ -18,7 +18,7 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 
 2. Creá un proyecto en [Supabase](https://supabase.com) y copiá `.env.example` a `.env.local` con la URL y la publishable key del proyecto.
 
-3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`), `0002_covers.sql` (el espacio para las portadas que se suben) y `0003_progress.sql` (la página por la que va cada libro) `0004_notes.sql` (las notas de lectura) `0005_progress_percent.sql` (el porcentaje de avance) `0006_format_optional.sql` (el formato puede quedar sin definir) `0007_finished_at.sql` (la fecha en que terminaste cada libro) y `0008_notes_update.sql` (poder editar notas) en el SQL Editor de Supabase. Hay que pegar el contenido de cada archivo, no su nombre.
+3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`), `0002_covers.sql` (el espacio para las portadas que se suben) y `0003_progress.sql` (la página por la que va cada libro) `0004_notes.sql` (las notas de lectura) `0005_progress_percent.sql` (el porcentaje de avance) `0006_format_optional.sql` (el formato puede quedar sin definir) `0007_finished_at.sql` (la fecha en que terminaste cada libro) `0008_notes_update.sql` (poder editar notas) y `0009_rating.sql` (las estrellas) en el SQL Editor de Supabase. Hay que pegar el contenido de cada archivo, no su nombre.
 
 4. Levantá la app:
 
@@ -73,6 +73,10 @@ Arriba de la lista hay un buscador por título o autor (sin distinguir mayúscul
 ## Fecha de lectura y edición de libros
 
 Los libros leídos guardan la fecha en que los terminaste: se toma de "Date Read" de Goodreads al importar (volviendo a subir el CSV se completa en los que ya estaban) y, si marcás "Lo terminé", es el momento en que lo tocaste. En la pestaña Leídos se muestra "Terminado el …" y el orden por fecha usa esa (si un libro no la tiene, la de agregado). Desde el detalle de un libro, **Editar libro** permite cambiar título, autor, género, páginas, portada, formato y la fecha de lectura. Requiere `supabase/migrations/0007_finished_at.sql`.
+
+## Estrellas
+
+Los libros leídos se pueden calificar de 1 a 5 estrellas desde su detalle (tocar la estrella ya marcada la quita), y las estrellas se ven en la tarjeta de Mi pila. Al importar de Goodreads se trae "My Rating" (el 0 de Goodreads es "sin calificar"); volviendo a subir el CSV se completan en los libros que ya estaban. Requiere `supabase/migrations/0009_rating.sql`.
 
 ## Formato en el detalle del libro
 

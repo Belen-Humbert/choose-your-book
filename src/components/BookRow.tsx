@@ -2,6 +2,7 @@ import Link from "next/link";
 import { deleteBook, setStatus } from "@/app/(app)/pila/actions";
 import type { Book, BookStatus } from "@/lib/types";
 import BookCover from "./BookCover";
+import { EstrellasLectura } from "./Estrellas";
 import FechaHora from "./FechaHora";
 import FormatoLibro from "./FormatoLibro";
 import ProgresoLectura from "./ProgresoLectura";
@@ -44,6 +45,7 @@ export default function BookRow({ book }: { book: Book }) {
                   Terminado el <FechaHora iso={book.finished_at} soloFecha />
                 </span>
               )}
+              {book.status === "leido" && <EstrellasLectura rating={book.rating ?? null} />}
               {meta && <span className="text-xs text-crema-suave">{meta}</span>}
             </div>
             <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-bold text-mostaza">

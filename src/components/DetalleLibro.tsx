@@ -4,6 +4,7 @@ import { NOTE_MAX_LENGTH } from "@/lib/notes";
 import { bookPercent, notePosition, positionLabel } from "@/lib/progress";
 import type { Book, BookNote, BookStatus } from "@/lib/types";
 import BookCover from "./BookCover";
+import { EstrellasEditables } from "./Estrellas";
 import FechaHora from "./FechaHora";
 import FormatoLibro from "./FormatoLibro";
 import ProgresoLectura from "./ProgresoLectura";
@@ -112,6 +113,18 @@ export default function DetalleLibro({
           className="rounded-[14px] border border-borde bg-panel p-3.5"
         >
           <ProgresoLectura book={book} />
+        </section>
+      )}
+
+      {book.status === "leido" && (
+        <section
+          aria-label="Mi calificación"
+          className="flex flex-col gap-1 rounded-[14px] border border-borde bg-panel p-3.5"
+        >
+          <p className="text-sm font-medium text-crema-suave">
+            {book.rating ? "Tu calificación" : "¿Cuántas estrellas le pondrías?"}
+          </p>
+          <EstrellasEditables bookId={book.id} rating={book.rating ?? null} />
         </section>
       )}
 

@@ -26,6 +26,7 @@ export type Book = {
   has_digital: boolean;
   has_physical: boolean;
   status: BookStatus;
+  rating: number | null; // estrellas de 1 a 5 (solo libros leídos; ver 0009)
   finished_at: string | null; // cuándo terminó de leerlo (solo libros leídos; ver 0007)
   created_at: string;
 };
