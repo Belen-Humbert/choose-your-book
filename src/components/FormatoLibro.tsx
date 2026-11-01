@@ -6,6 +6,8 @@ import type { Book } from "@/lib/types";
 
 type Props = {
   book: Pick<Book, "id" | "title" | "status" | "has_digital" | "has_physical">;
+  // En el detalle del libro se ofrece elegir el formato en cualquier estado.
+  always?: boolean;
 };
 
 function IconoLibro() {
@@ -62,11 +64,11 @@ function Opcion({
 
 // Formato del libro. Sin formato (y por leer): dos botones con ícono para elegir con un toque,
 // se pueden marcar los dos. Con formato: la etiqueta de siempre; tocarla permite cambiarlo.
-export default function FormatoLibro({ book }: Props) {
+export default function FormatoLibro({ book, always = false }: Props) {
   const [editing, setEditing] = useState(false);
   const has = book.has_digital || book.has_physical;
 
-  if (!has && book.status !== "pendiente") return null;
+  if (!has && !always && book.status !== "pendiente") return null;
 
   if (has && !editing) {
     return (

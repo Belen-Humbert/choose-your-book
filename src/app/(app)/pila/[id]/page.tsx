@@ -20,6 +20,9 @@ export default async function LibroPage({
   const query = await searchParams;
   const error = typeof query.error === "string" ? query.error : null;
 
+  const editingNoteId =
+    typeof query.editar === "string" && isUuid(query.editar) ? query.editar : null;
+
   const supabase = await createClient();
   const { data: book } = await supabase
     .from("books")
@@ -41,6 +44,7 @@ export default async function LibroPage({
       notes={(notes ?? []) as BookNote[]}
       notesFailed={Boolean(notesError)}
       error={error}
+      editingNoteId={editingNoteId}
     />
   );
 }

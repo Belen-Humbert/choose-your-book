@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { addNote, deleteNote } from "@/app/(app)/pila/actions";
+import { addNote, deleteNote, updateNote } from "@/app/(app)/pila/actions";
 import { NOTE_MAX_LENGTH } from "@/lib/notes";
 import { bookPercent, notePosition, positionLabel } from "@/lib/progress";
 import type { Book, BookNote, BookStatus } from "@/lib/types";
 import BookCover from "./BookCover";
 import FechaHora from "./FechaHora";
+import FormatoLibro from "./FormatoLibro";
 import ProgresoLectura from "./ProgresoLectura";
 
 const STATUS_LABEL: Record<BookStatus, string> = {
@@ -35,11 +36,13 @@ export default function DetalleLibro({
   notes,
   notesFailed = false,
   error = null,
+  editingNoteId = null,
 }: {
   book: Book;
   notes: BookNote[];
   notesFailed?: boolean;
   error?: string | null;
+  editingNoteId?: string | null;
 }) {
   const meta = [book.genre, book.pages ? `${book.pages} págs` : null]
     .filter(Boolean)
@@ -85,17 +88,8 @@ export default function DetalleLibro({
           {book.author && (
             <p className="text-[15px] text-crema-suave">{book.author}</p>
           )}
+          <FormatoLibro book={book} always />
           <div className="flex flex-wrap items-center gap-2">
-            {book.has_digital && (
-              <span className="rounded-[10px] bg-petroleo px-2.5 py-0.5 text-xs font-bold text-crema">
-                Digital
-              </span>
-            )}
-            {book.has_physical && (
-              <span className="rounded-[10px] bg-mostaza px-2.5 py-0.5 text-xs font-bold text-tinta">
-                Físico
-              </span>
-            )}
             {meta && <span className="text-xs text-crema-suave">{meta}</span>}
           </div>
           {book.status === "leido" && book.finished_at && (
@@ -206,6 +200,18 @@ export default function DetalleLibro({
                     <FechaHora iso={note.created_at} />
                     <PosicionNota note={note} pages={book.pages} />
                   </div>
+                  <div className="flex items-center">
+                  {editingNoteId !== note.id && (
+                    <Link
+                      href={`/pila/${book.id}?editar=${note.id}`}
+                      aria-label="Editar esta nota"
+                      className="flex size-11 items-center justify-center rounded-full text-crema-suave focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+                    >
+                      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4zM13.5 6.5l4 4" />
+                      </svg>
+                    </Link>
+                  )}
                   <form action={deleteNote}>
                     <input type="hidden" name="note_id" value={note.id} />
                     <input type="hidden" name="book_id" value={book.id} />
@@ -229,10 +235,45 @@ export default function DetalleLibro({
                       </svg>
                     </button>
                   </form>
+                  </div>
                 </div>
-                <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-crema">
-                  {note.body}
-                </p>
+                {editingNoteId === note.id ? (
+                  <form action={updateNote} className="flex flex-col gap-2">
+                    <input type="hidden" name="note_id" value={note.id} />
+                    <input type="hidden" name="book_id" value={book.id} />
+                    <label htmlFor={`editar-${note.id}`} className="sr-only">
+                      Editar la nota
+                    </label>
+                    <textarea
+                      id={`editar-${note.id}`}
+                      name="body"
+                      required
+                      autoFocus
+                      rows={4}
+                      maxLength={NOTE_MAX_LENGTH}
+                      defaultValue={note.body}
+                      className="min-h-28 w-full resize-y rounded-xl border-0 bg-crema p-3 text-base text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+                    />
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        href={`/pila/${book.id}`}
+                        className="inline-flex h-11 items-center px-4 text-sm font-medium text-crema-suave underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+                      >
+                        Cancelar
+                      </Link>
+                      <button
+                        type="submit"
+                        className="h-11 cursor-pointer rounded-full bg-mostaza px-5 text-sm font-bold text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
+                      >
+                        Guardar cambios
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-crema">
+                    {note.body}
+                  </p>
+                )}
               </li>
             ))}
           </ol>

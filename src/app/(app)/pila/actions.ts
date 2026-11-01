@@ -467,3 +467,25 @@ export async function updateBook(formData: FormData) {
   revalidatePath("/");
   redirect(`/pila/${id}`);
 }
+
+// Cambia el texto de una nota. Conserva la fecha, la hora y la posición en que se escribió.
+export async function updateNote(formData: FormData) {
+  const noteId = String(formData.get("note_id") ?? "");
+  const bookId = String(formData.get("book_id") ?? "");
+  const body = String(formData.get("body") ?? "").trim().slice(0, NOTE_MAX_LENGTH);
+  if (!isUuid(noteId) || !isUuid(bookId) || !body) return;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("book_notes")
+    .update({ body })
+    .eq("id", noteId)
+    .select("id");
+  // Sin la migración 0008 la base no da error: simplemente no modifica ninguna fila.
+  if (error || !data || data.length === 0) {
+    backToBook(bookId, "No pudimos guardar los cambios de la nota. Probá de nuevo.");
+  }
+
+  revalidatePath(`/pila/${bookId}`);
+  redirect(`/pila/${bookId}`);
+}

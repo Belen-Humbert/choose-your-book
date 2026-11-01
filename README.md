@@ -18,7 +18,7 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 
 2. Creá un proyecto en [Supabase](https://supabase.com) y copiá `.env.example` a `.env.local` con la URL y la publishable key del proyecto.
 
-3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`), `0002_covers.sql` (el espacio para las portadas que se suben) y `0003_progress.sql` (la página por la que va cada libro) `0004_notes.sql` (las notas de lectura) `0005_progress_percent.sql` (el porcentaje de avance) `0006_format_optional.sql` (el formato puede quedar sin definir) y `0007_finished_at.sql` (la fecha en que terminaste cada libro) en el SQL Editor de Supabase. Hay que pegar el contenido de cada archivo, no su nombre.
+3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`), `0002_covers.sql` (el espacio para las portadas que se suben) y `0003_progress.sql` (la página por la que va cada libro) `0004_notes.sql` (las notas de lectura) `0005_progress_percent.sql` (el porcentaje de avance) `0006_format_optional.sql` (el formato puede quedar sin definir) `0007_finished_at.sql` (la fecha en que terminaste cada libro) y `0008_notes_update.sql` (poder editar notas) en el SQL Editor de Supabase. Hay que pegar el contenido de cada archivo, no su nombre.
 
 4. Levantá la app:
 
@@ -74,6 +74,10 @@ Arriba de la lista hay un buscador por título o autor (sin distinguir mayúscul
 
 Los libros leídos guardan la fecha en que los terminaste: se toma de "Date Read" de Goodreads al importar (volviendo a subir el CSV se completa en los que ya estaban) y, si marcás "Lo terminé", es el momento en que lo tocaste. En la pestaña Leídos se muestra "Terminado el …" y el orden por fecha usa esa (si un libro no la tiene, la de agregado). Desde el detalle de un libro, **Editar libro** permite cambiar título, autor, género, páginas, portada, formato y la fecha de lectura. Requiere `supabase/migrations/0007_finished_at.sql`.
 
+## Formato en el detalle del libro
+
+En el detalle de cualquier libro, el formato se elige o se cambia con los mismos botones con ícono de Mi pila.
+
 ## Completar género y portada
 
 En "Por leer" (sin búsqueda ni filtro activo), si hay libros por leer o leyendo sin género o sin portada —típicamente los importados de Goodreads— aparece un bloque con el botón **Completar datos**. Los busca de a 6 en Google Books (con Open Library de respaldo), muestra el avance y se puede detener. Solo completa lo que falta (género, páginas, portada), nunca pisa lo que ya tenías, y acepta un resultado solo si el título coincide (y el autor, si los dos lo tienen). Los que no encuentra quedan como estaban y se pueden volver a intentar.
@@ -92,7 +96,7 @@ Los libros que estás leyendo muestran una barra con la página actual y el porc
 
 ## Notas de lectura
 
-Tocando un libro en Mi pila (o en "Leyendo ahora") se abre su detalle: portada, datos, progreso (si lo estás leyendo) y sus **notas**. Cada nota se guarda con la fecha y la hora, que se muestran en la zona horaria de quien mira la app, y con la página y/o el porcentaje en que ibas al escribirla ("Página 225 · 54%"). Si estás leyendo el libro, la nota se escribe en el panel de Actualizar progreso. Se pueden borrar. Cada persona ve solo sus notas y solo puede escribir en sus libros. Al quitar un libro se borran también sus notas. Requiere `supabase/migrations/0004_notes.sql`.
+Tocando un libro en Mi pila (o en "Leyendo ahora") se abre su detalle: portada, datos, progreso (si lo estás leyendo) y sus **notas**. Cada nota se guarda con la fecha y la hora, que se muestran en la zona horaria de quien mira la app, y con la página y/o el porcentaje en que ibas al escribirla ("Página 225 · 54%"). Si estás leyendo el libro, la nota se escribe en el panel de Actualizar progreso. Se pueden editar (el lápiz de cada nota cambia el texto y conserva la fecha y la posición; requiere `0008_notes_update.sql`) y borrar. Cada persona ve solo sus notas y solo puede escribir en sus libros. Al quitar un libro se borran también sus notas. Requiere `supabase/migrations/0004_notes.sql`.
 
 ## Próximos pasos
 

@@ -184,7 +184,7 @@ export default function Ruleta({ books }: { books: Book[] }) {
         {genres.length > 0 && (
           <div className="flex flex-col gap-2">
             <p className={sectionLabel}>Género</p>
-            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 aria-pressed={genre === null}
