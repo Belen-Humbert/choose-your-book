@@ -265,7 +265,7 @@ export default function Ruleta({ books }: { books: Book[] }) {
           </span>
         </p>
         <div>
-          <div aria-hidden="true" className="flex h-[104px] items-end justify-center gap-1.5 px-1">
+          <div aria-hidden="true" className="flex h-[118px] items-end justify-center gap-1 px-1">
             {shown.map((book, index) => {
               const colors = coverColors(book.id);
               const lifted = book.id === highlightId;
@@ -273,11 +273,11 @@ export default function Ruleta({ books }: { books: Book[] }) {
               return (
                 <div
                   key={book.id}
-                  className={`relative flex w-[34px] flex-col justify-between overflow-hidden rounded-[3px] py-2 transition-all duration-300 motion-reduce:transition-none ${
-                    dim ? "opacity-55" : "opacity-100"
+                  className={`relative flex w-[38px] flex-col justify-between overflow-hidden rounded-[3px] py-2 transition-all duration-300 motion-reduce:transition-none ${
+                    dim ? "brightness-[0.88] saturate-75" : ""
                   }`}
                   style={{
-                    height: SPINE_HEIGHTS[index % SPINE_HEIGHTS.length] + 8,
+                    height: SPINE_HEIGHTS[index % SPINE_HEIGHTS.length] + 22,
                     backgroundColor: colors.bg,
                     backgroundImage:
                       "linear-gradient(90deg, rgba(255,255,255,0.14), rgba(0,0,0,0) 35%, rgba(0,0,0,0.18))",
@@ -291,7 +291,7 @@ export default function Ruleta({ books }: { books: Book[] }) {
                 >
                   <div className="h-[3px] opacity-80" style={{ backgroundColor: colors.ink }} />
                   <span
-                    className="mx-auto max-h-[44px] overflow-hidden text-[9px] font-bold leading-none"
+                    className="mx-auto max-h-[56px] overflow-hidden text-ellipsis whitespace-nowrap text-[11px] font-bold leading-none"
                     style={{ writingMode: "vertical-rl", color: colors.ink }}
                   >
                     {book.title}
