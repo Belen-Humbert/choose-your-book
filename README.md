@@ -66,6 +66,10 @@ Requiere haber corrido `supabase/migrations/0002_covers.sql`. Si no, la app avis
 
 Cada libro está en "Por leer", "Leyendo" o "Leído". Se cambia desde Mi pila o con el botón "Empezar a leer" de la ruleta. Lo que estás leyendo aparece arriba en el inicio, y la ruleta solo sortea entre los "Por leer".
 
+## Buscar y ordenar en Mi pila
+
+Arriba de la lista hay un buscador por título o autor (sin distinguir mayúsculas ni tildes; todas las palabras tienen que coincidir) que busca dentro de la pestaña en la que estás (Por leer, Leyendo o Leídos) y respeta el filtro de formato. También se puede ordenar por la fecha en que se agregó cada libro, más nuevos o más viejos primero. Los libros importados juntos comparten fecha, y entre ellos el orden es alfabético.
+
 ## Formato (digital / físico)
 
 El formato es opcional. En Mi pila, los libros sin formato muestran dos botones con ícono (físico y digital) para marcarlo con un toque, y se pueden marcar los dos. Tocando la etiqueta de un libro con formato se cambia. La ruleta ignora los libros sin formato solo cuando filtrás por uno. Requiere `supabase/migrations/0006_format_optional.sql`.

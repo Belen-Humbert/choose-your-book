@@ -1,6 +1,7 @@
 import Link from "next/link";
 import BookRow from "@/components/BookRow";
 import SupabaseMissing from "@/components/SupabaseMissing";
+import { matchesQuery, sortBooks, type Orden } from "@/lib/pilaSearch";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import type { Book, BookStatus } from "@/lib/types";
@@ -32,10 +33,17 @@ const EMPTY: Record<BookStatus, { title: string; text: string }> = {
   },
 };
 
-function buildHref(estado: string, formato: string | null) {
+function buildHref(
+  estado: string,
+  formato: string | null,
+  q: string,
+  orden: Orden,
+) {
   const query = new URLSearchParams();
   if (estado !== "pendiente") query.set("estado", estado);
   if (formato) query.set("formato", formato);
+  if (q) query.set("q", q);
+  if (orden !== "nuevos") query.set("orden", orden);
   const text = query.toString();
   return text ? `/pila?${text}` : "/pila";
 }
@@ -57,6 +65,9 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
       ? params.formato
       : null;
 
+  const q = (typeof params.q === "string" ? params.q : "").trim().slice(0, 100);
+  const orden: Orden = params.orden === "viejos" ? "viejos" : "nuevos";
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("books")
@@ -69,12 +80,15 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
     leyendo: all.filter((b) => b.status === "leyendo").length,
     leido: all.filter((b) => b.status === "leido").length,
   };
-  const books = all.filter((book) => {
-    if (book.status !== tab.status) return false;
-    if (formato === "digital") return book.has_digital;
-    if (formato === "fisico") return book.has_physical;
-    return true;
-  });
+  const books = sortBooks(
+    all.filter((book) => {
+      if (book.status !== tab.status) return false;
+      if (formato === "digital" && !book.has_digital) return false;
+      if (formato === "fisico" && !book.has_physical) return false;
+      return matchesQuery(book, q);
+    }),
+    orden,
+  );
 
   const heading =
     tab.status === "pendiente"
@@ -107,7 +121,7 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
           return (
             <Link
               key={t.status}
-              href={buildHref(t.param, formato)}
+              href={buildHref(t.param, formato, q, orden)}
               aria-current={active ? "page" : undefined}
               className={`${chip} ${
                 active
@@ -122,13 +136,58 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
         })}
       </nav>
 
+      <form role="search" action="/pila" className="flex flex-col gap-2">
+        {tab.param !== "pendiente" && <input type="hidden" name="estado" value={tab.param} />}
+        {formato && <input type="hidden" name="formato" value={formato} />}
+        <div className="flex gap-2">
+          <label htmlFor="buscar" className="sr-only">
+            Buscar por título o autor
+          </label>
+          <input
+            id="buscar"
+            name="q"
+            type="search"
+            defaultValue={q}
+            maxLength={100}
+            placeholder="Buscar por título o autor"
+            className="h-11 min-w-0 flex-1 rounded-full border-0 bg-crema px-4 text-base text-tinta placeholder:text-tinta/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+          />
+          <button
+            type="submit"
+            className="h-11 cursor-pointer rounded-full bg-mostaza px-5 text-sm font-bold text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
+          >
+            Buscar
+          </button>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-crema-suave">
+          <label htmlFor="orden">Ordenar por fecha en que lo agregué</label>
+          <select
+            id="orden"
+            name="orden"
+            defaultValue={orden}
+            className="h-11 rounded-full border-0 bg-crema px-3 text-sm text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+          >
+            <option value="nuevos">Más nuevos primero</option>
+            <option value="viejos">Más viejos primero</option>
+          </select>
+        </div>
+        {(q || orden !== "nuevos") && (
+          <Link
+            href={buildHref(tab.param, formato, "", "nuevos")}
+            className="inline-flex min-h-11 items-center self-start text-sm font-bold text-mostaza underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+          >
+            Limpiar búsqueda
+          </Link>
+        )}
+      </form>
+
       <nav aria-label="Formato" className="flex gap-2">
         {FORMATS.map((f) => {
           const active = f.value === formato;
           return (
             <Link
               key={f.label}
-              href={buildHref(tab.param, f.value)}
+              href={buildHref(tab.param, f.value, q, orden)}
               aria-current={active ? "true" : undefined}
               className={`${chip} ${
                 active
@@ -161,14 +220,18 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
         !error && (
           <div className="flex flex-col items-start gap-4 rounded-[14px] border border-borde bg-panel p-5">
             <p className="font-display text-2xl font-extrabold text-crema">
-              {formato ? "No hay libros con ese formato" : EMPTY[tab.status].title}
+              {q
+                ? `Ningún libro coincide con “${q}”`
+                : formato
+                  ? "No hay libros con ese formato"
+                  : EMPTY[tab.status].title}
             </p>
             <p className="text-sm text-crema-suave">
-              {formato
-                ? "Probá con otro filtro."
+              {q || formato
+                ? "Probá con otra palabra o con otro filtro."
                 : EMPTY[tab.status].text}
             </p>
-            {tab.status === "pendiente" && !formato && (
+            {tab.status === "pendiente" && !formato && !q && (
               <Link
                 href="/pila/nueva"
                 className="inline-flex h-12 items-center rounded-2xl bg-mostaza px-5 text-base font-bold text-tinta shadow-[0_4px_0_#9a6f10] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema"
