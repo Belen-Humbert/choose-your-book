@@ -290,12 +290,7 @@ export default function Ruleta({ books }: { books: Book[] }) {
                   }}
                 >
                   <div className="h-[3px] opacity-80" style={{ backgroundColor: colors.ink }} />
-                  <span
-                    className="mx-auto max-h-[56px] overflow-hidden text-ellipsis whitespace-nowrap text-[11px] font-bold leading-none"
-                    style={{ writingMode: "vertical-rl", color: colors.ink }}
-                  >
-                    {book.title}
-                  </span>
+                  <div className="mx-auto h-5 w-4 rounded-[2px] opacity-25" style={{ backgroundColor: colors.ink }} />
                   <div className="h-[3px] opacity-80" style={{ backgroundColor: colors.ink }} />
                 </div>
               );
