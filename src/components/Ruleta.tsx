@@ -255,39 +255,56 @@ export default function Ruleta({ books }: { books: Book[] }) {
         </div>
       </section>
 
-      <div className="flex h-[92px] items-end gap-4 px-1">
-        <div aria-hidden="true" className="flex h-[92px] items-end gap-1.5">
-          {shown.map((book, index) => {
-            const colors = coverColors(book.id);
-            const lifted = book.id === highlightId;
-            return (
-              <div
-                key={book.id}
-                className="w-9 rounded-[3px] pt-2.5 transition-transform duration-300 motion-reduce:transition-none"
-                style={{
-                  height: SPINE_HEIGHTS[index % SPINE_HEIGHTS.length],
-                  backgroundColor: colors.bg,
-                  transform: lifted
-                    ? "translateY(-10px) rotate(-4deg)"
-                    : `rotate(${SPINE_ROTATIONS[index % SPINE_ROTATIONS.length]}deg)`,
-                  boxShadow: lifted ? "0 8px 14px rgba(0,0,0,0.45)" : "none",
-                }}
-              >
+      <div className="flex flex-col gap-3 rounded-[18px] border border-borde bg-panel px-4 pt-4">
+        <p className="flex items-baseline gap-2">
+          <span className="font-display text-3xl font-extrabold leading-none text-tinta">
+            {matches.length}
+          </span>
+          <span className="text-sm text-suave">
+            {matches.length === 1 ? "libro cumple" : "libros cumplen"} tus filtros
+          </span>
+        </p>
+        <div>
+          <div aria-hidden="true" className="flex h-[104px] items-end justify-center gap-1.5 px-1">
+            {shown.map((book, index) => {
+              const colors = coverColors(book.id);
+              const lifted = book.id === highlightId;
+              const dim = highlightId !== null && !lifted;
+              return (
                 <div
-                  className="h-1 opacity-85"
-                  style={{ backgroundColor: colors.ink }}
-                />
-              </div>
-            );
-          })}
-        </div>
-        <div className="pb-1">
-          <p className="font-display text-2xl font-extrabold leading-[1.1] text-tinta">
-            {matches.length} {matches.length === 1 ? "libro" : "libros"}
-          </p>
-          <p className="text-sm text-suave">
-            {matches.length === 1 ? "cumple" : "cumplen"} tus filtros
-          </p>
+                  key={book.id}
+                  className={`relative flex w-[34px] flex-col justify-between overflow-hidden rounded-[3px] py-2 transition-all duration-300 motion-reduce:transition-none ${
+                    dim ? "opacity-55" : "opacity-100"
+                  }`}
+                  style={{
+                    height: SPINE_HEIGHTS[index % SPINE_HEIGHTS.length] + 8,
+                    backgroundColor: colors.bg,
+                    backgroundImage:
+                      "linear-gradient(90deg, rgba(255,255,255,0.14), rgba(0,0,0,0) 35%, rgba(0,0,0,0.18))",
+                    transform: lifted
+                      ? "translateY(-12px) rotate(-3deg)"
+                      : `rotate(${SPINE_ROTATIONS[index % SPINE_ROTATIONS.length]}deg)`,
+                    boxShadow: lifted
+                      ? "0 10px 16px rgba(43,29,20,0.35), 0 0 0 2px #e0a526"
+                      : "inset -1px 0 0 rgba(0,0,0,0.15)",
+                  }}
+                >
+                  <div className="h-[3px] opacity-80" style={{ backgroundColor: colors.ink }} />
+                  <span
+                    className="mx-auto max-h-[44px] overflow-hidden text-[9px] font-bold leading-none"
+                    style={{ writingMode: "vertical-rl", color: colors.ink }}
+                  >
+                    {book.title}
+                  </span>
+                  <div className="h-[3px] opacity-80" style={{ backgroundColor: colors.ink }} />
+                </div>
+              );
+            })}
+          </div>
+          <div
+            aria-hidden="true"
+            className="-mx-4 h-3 rounded-b-[14px] bg-gradient-to-b from-[#b98350] to-[#8a5a2f]"
+          />
         </div>
       </div>
 
@@ -316,7 +333,7 @@ export default function Ruleta({ books }: { books: Book[] }) {
 
       <div aria-live="polite">
         {winner ? (
-          <section className="flex gap-3.5 rounded-[18px] bg-crema p-3.5 text-tinta">
+          <section className="aparecer flex gap-3.5 rounded-[18px] border border-borde bg-panel p-3.5 text-tinta shadow-[0_3px_0_#e6d6b6]">
             <BookCover book={winner} variant="winner" />
             <div className="flex min-w-0 flex-col justify-center gap-1.5">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#8a3a1c]">

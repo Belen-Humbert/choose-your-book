@@ -35,3 +35,23 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
 }
+
+/* Aparición suave del libro elegido en la ruleta */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.aparecer {
+  animation: aparecer 0.35s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aparecer {
+    animation: none;
+  }
+}
