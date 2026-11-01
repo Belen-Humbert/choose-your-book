@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BookRow from "@/components/BookRow";
+import CompletarDatos from "@/components/CompletarDatos";
 import SupabaseMissing from "@/components/SupabaseMissing";
 import { matchesQuery, sortBooks, type Orden } from "@/lib/pilaSearch";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
@@ -90,6 +91,11 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
     orden,
   );
 
+  // Libros por leer o leyendo a los que les falta género o portada.
+  const incomplete = all
+    .filter((b) => b.status !== "leido" && (!b.genre || !b.cover_url))
+    .map((b) => b.id);
+
   const heading =
     tab.status === "pendiente"
       ? `${books.length} por leer`
@@ -135,6 +141,10 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
           );
         })}
       </nav>
+
+      {tab.status === "pendiente" && !q && !formato && (
+        <CompletarDatos ids={incomplete} />
+      )}
 
       <form role="search" action="/pila" className="flex flex-col gap-2">
         {tab.param !== "pendiente" && <input type="hidden" name="estado" value={tab.param} />}

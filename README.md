@@ -70,6 +70,10 @@ Cada libro está en "Por leer", "Leyendo" o "Leído". Se cambia desde Mi pila o 
 
 Arriba de la lista hay un buscador por título o autor (sin distinguir mayúsculas ni tildes; todas las palabras tienen que coincidir) que busca dentro de la pestaña en la que estás (Por leer, Leyendo o Leídos) y respeta el filtro de formato. También se puede ordenar por la fecha en que se agregó cada libro, más nuevos o más viejos primero. Los libros importados de Goodreads usan la fecha en que los agregaste allá.
 
+## Completar género y portada
+
+En "Por leer" (sin búsqueda ni filtro activo), si hay libros por leer o leyendo sin género o sin portada —típicamente los importados de Goodreads— aparece un bloque con el botón **Completar datos**. Los busca de a 6 en Google Books (con Open Library de respaldo), muestra el avance y se puede detener. Solo completa lo que falta (género, páginas, portada), nunca pisa lo que ya tenías, y acepta un resultado solo si el título coincide (y el autor, si los dos lo tienen). Los que no encuentra quedan como estaban y se pueden volver a intentar.
+
 ## Formato (digital / físico)
 
 El formato es opcional. En Mi pila, los libros sin formato muestran dos botones con ícono (físico y digital) para marcarlo con un toque, y se pueden marcar los dos. Tocando la etiqueta de un libro con formato se cambia. La ruleta ignora los libros sin formato solo cuando filtrás por uno. Requiere `supabase/migrations/0006_format_optional.sql`.

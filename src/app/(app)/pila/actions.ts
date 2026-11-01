@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { searchBooks } from "@/lib/bookSearch";
+import { enrichQuery, pickMatch } from "@/lib/enrich";
 import { bookKey, parseGoodreadsExport } from "@/lib/goodreadsCsv";
 import { isUuid } from "@/lib/ids";
 import { NOTE_MAX_LENGTH } from "@/lib/notes";
@@ -348,4 +350,49 @@ export async function toggleFormat(formData: FormData) {
   revalidatePath("/pila");
   revalidatePath("/pila/[id]", "page");
   revalidatePath("/");
+}
+
+// Completa género, páginas y portada de libros que no los tienen, buscándolos en Google Books
+// (o en Open Library). Nunca pisa un dato que el libro ya tiene. Se llama de a pocos libros.
+export async function completeBookData(
+  ids: string[],
+): Promise<{ updated: number; notFound: number }> {
+  const batch = ids.filter(isUuid).slice(0, 6);
+  if (batch.length === 0) return { updated: 0, notFound: 0 };
+
+  const supabase = await createClient();
+  const { data: books } = await supabase
+    .from("books")
+    .select("id, title, author, genre, pages, cover_url")
+    .in("id", batch);
+
+  let updated = 0;
+  let notFound = 0;
+  await Promise.all(
+    (books ?? []).map(async (book) => {
+      try {
+        const { results } = await searchBooks(enrichQuery(book));
+        const match = pickMatch(book, results);
+        const changes: { genre?: string; pages?: number; cover_url?: string } = {};
+        if (match) {
+          if (!book.genre && match.genre) changes.genre = match.genre;
+          if (!book.pages && match.pages) changes.pages = match.pages;
+          if (!book.cover_url && match.coverUrl) changes.cover_url = match.coverUrl;
+        }
+        if (Object.keys(changes).length === 0) {
+          notFound++;
+          return;
+        }
+        const { error } = await supabase.from("books").update(changes).eq("id", book.id);
+        if (error) notFound++;
+        else updated++;
+      } catch {
+        notFound++;
+      }
+    }),
+  );
+
+  revalidatePath("/pila");
+  revalidatePath("/");
+  return { updated, notFound };
 }
