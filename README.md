@@ -64,7 +64,7 @@ Requiere haber corrido `supabase/migrations/0002_covers.sql`. Si no, la app avis
 
 ## Estados de lectura
 
-Cada libro está en "Por leer", "Leyendo" o "Leído". Se cambia desde Mi pila o con el botón "Empezar a leer" de la ruleta. Lo que estás leyendo aparece arriba en el inicio, y la ruleta solo sortea entre los "Por leer".
+Cada libro está en "Por leer", "Leyendo" o "Leído". Se cambia desde Mi pila o con el botón "Empezar a leer" de la ruleta. Lo que estás leyendo aparece arriba en el inicio, y la ruleta solo sortea entre los "Por leer" (y el filtro de género admite elegir varios a la vez).
 
 ## Buscar y ordenar en Mi pila
 

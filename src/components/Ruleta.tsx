@@ -35,7 +35,8 @@ function pickShown(matches: Book[], winnerId: string | null) {
 
 export default function Ruleta({ books }: { books: Book[] }) {
   const [formato, setFormato] = useState<Formato>("todos");
-  const [genre, setGenre] = useState<string | null>(null);
+  // Géneros elegidos (puede ser más de uno); vacío = todos.
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [maxPages, setMaxPages] = useState(PAGES_MAX);
 
   const [winnerId, setWinnerId] = useState<string | null>(null);
@@ -63,12 +64,16 @@ export default function Ruleta({ books }: { books: Book[] }) {
       books.filter((book) => {
         if (formato === "digital" && !book.has_digital) return false;
         if (formato === "fisico" && !book.has_physical) return false;
-        if (genre && book.genre !== genre) return false;
+        if (
+          selectedGenres.length > 0 &&
+          (!book.genre || !selectedGenres.includes(book.genre))
+        )
+          return false;
         if (maxPages < PAGES_MAX && (book.pages === null || book.pages > maxPages))
           return false;
         return true;
       }),
-    [books, formato, genre, maxPages],
+    [books, formato, selectedGenres, maxPages],
   );
 
   const winner = revealed ? matches.find((book) => book.id === winnerId) : undefined;
@@ -183,16 +188,19 @@ export default function Ruleta({ books }: { books: Book[] }) {
 
         {genres.length > 0 && (
           <div className="flex flex-col gap-2">
-            <p className={sectionLabel}>Género</p>
+            <p className={sectionLabel}>
+              Género{" "}
+              <span className="font-normal normal-case tracking-normal">(podés elegir varios)</span>
+            </p>
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                aria-pressed={genre === null}
+                aria-pressed={selectedGenres.length === 0}
                 onClick={() => {
-                  setGenre(null);
+                  setSelectedGenres([]);
                   resetSpin();
                 }}
-                className={`${chipBase} ${genre === null ? chipOnRed : chipOff}`}
+                className={`${chipBase} ${selectedGenres.length === 0 ? chipOnRed : chipOff}`}
               >
                 Todos
               </button>
@@ -200,12 +208,16 @@ export default function Ruleta({ books }: { books: Book[] }) {
                 <button
                   key={g}
                   type="button"
-                  aria-pressed={genre === g}
+                  aria-pressed={selectedGenres.includes(g)}
                   onClick={() => {
-                    setGenre(g);
+                    setSelectedGenres((current) =>
+                      current.includes(g)
+                        ? current.filter((x) => x !== g)
+                        : [...current, g],
+                    );
                     resetSpin();
                   }}
-                  className={`${chipBase} ${genre === g ? chipOnRed : chipOff}`}
+                  className={`${chipBase} ${selectedGenres.includes(g) ? chipOnRed : chipOff}`}
                 >
                   {g}
                 </button>
