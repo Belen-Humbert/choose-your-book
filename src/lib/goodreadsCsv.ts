@@ -60,6 +60,7 @@ const SHELF_STATUS: Record<string, BookStatus> = {
   "to-read": "pendiente",
   "currently-reading": "leyendo",
   read: "leido",
+  "did-not-finish": "abandonado",
 };
 
 function formatFromBinding(binding: string): ImportedBook["format"] {

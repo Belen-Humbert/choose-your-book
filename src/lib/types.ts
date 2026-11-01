@@ -9,7 +9,7 @@ export type BookNote = {
   created_at: string; // fecha y hora en UTC (ISO)
 };
 
-export type BookStatus = "pendiente" | "leyendo" | "leido";
+export type BookStatus = "pendiente" | "leyendo" | "leido" | "abandonado";
 
 // Una fila de la tabla `books` (ver supabase/migrations/0001_books.sql, 0003 y 0005).
 export type Book = {

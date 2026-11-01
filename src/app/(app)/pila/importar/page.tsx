@@ -73,7 +73,7 @@ export default async function ImportarPage({
           </label>
           <label className="flex min-h-11 items-center gap-3 text-crema">
             <input type="radio" name="que" value="todo" className="size-5 accent-mostaza" />
-            Todo (también leyendo y leídos)
+            Todo (también leyendo, leídos y abandonados)
           </label>
         </fieldset>
 

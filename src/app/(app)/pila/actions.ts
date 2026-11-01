@@ -143,7 +143,7 @@ export async function updateProgress(formData: FormData) {
   revalidatePath("/");
 }
 
-const STATUSES: BookStatus[] = ["pendiente", "leyendo", "leido"];
+const STATUSES: BookStatus[] = ["pendiente", "leyendo", "leido", "abandonado"];
 
 // Cambia el estado de lectura de un libro (por leer → leyendo → leído).
 export async function setStatus(formData: FormData) {

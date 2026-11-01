@@ -13,6 +13,7 @@ const STATUS_LABEL: Record<BookStatus, string> = {
   pendiente: "Por leer",
   leyendo: "Leyendo",
   leido: "Leído",
+  abandonado: "Abandonado",
 };
 
 // Dónde ibas cuando escribiste la nota: "Página 225 · 54%", "Página 80" o "54%".

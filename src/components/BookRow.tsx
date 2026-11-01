@@ -12,9 +12,14 @@ const STATUS_ACTIONS: Record<BookStatus, { label: string; to: BookStatus }[]> = 
   pendiente: [{ label: "Empezar a leer", to: "leyendo" }],
   leyendo: [
     { label: "Lo terminé", to: "leido" },
+    { label: "Lo abandoné", to: "abandonado" },
     { label: "Volver a la pila", to: "pendiente" },
   ],
   leido: [{ label: "Volver a la pila", to: "pendiente" }],
+  abandonado: [
+    { label: "Retomar", to: "leyendo" },
+    { label: "Volver a la pila", to: "pendiente" },
+  ],
 };
 
 export default function BookRow({ book }: { book: Book }) {

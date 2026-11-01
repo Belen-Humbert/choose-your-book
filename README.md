@@ -18,7 +18,7 @@ Web app para elegir tu próxima lectura: cargás tus pendientes, filtrás por fo
 
 2. Creá un proyecto en [Supabase](https://supabase.com) y copiá `.env.example` a `.env.local` con la URL y la publishable key del proyecto.
 
-3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`), `0002_covers.sql` (el espacio para las portadas que se suben) y `0003_progress.sql` (la página por la que va cada libro) `0004_notes.sql` (las notas de lectura) `0005_progress_percent.sql` (el porcentaje de avance) `0006_format_optional.sql` (el formato puede quedar sin definir) `0007_finished_at.sql` (la fecha en que terminaste cada libro) `0008_notes_update.sql` (poder editar notas) y `0009_rating.sql` (las estrellas) en el SQL Editor de Supabase. Hay que pegar el contenido de cada archivo, no su nombre.
+3. Corré, en este orden, el SQL de `supabase/migrations/0001_books.sql` (crea la tabla `books`), `0002_covers.sql` (el espacio para las portadas que se suben) y `0003_progress.sql` (la página por la que va cada libro) `0004_notes.sql` (las notas de lectura) `0005_progress_percent.sql` (el porcentaje de avance) `0006_format_optional.sql` (el formato puede quedar sin definir) `0007_finished_at.sql` (la fecha en que terminaste cada libro) `0008_notes_update.sql` (poder editar notas) `0009_rating.sql` (las estrellas) y `0010_abandoned.sql` (el estado abandonado) en el SQL Editor de Supabase. Hay que pegar el contenido de cada archivo, no su nombre.
 
 4. Levantá la app:
 
@@ -74,9 +74,13 @@ Arriba de la lista hay un buscador por título o autor (sin distinguir mayúscul
 
 Los libros leídos guardan la fecha en que los terminaste: se toma de "Date Read" de Goodreads al importar (volviendo a subir el CSV se completa en los que ya estaban) y, si marcás "Lo terminé", es el momento en que lo tocaste. En la pestaña Leídos se muestra "Terminado el …" y el orden por fecha usa esa (si un libro no la tiene, la de agregado). Desde el detalle de un libro, **Editar libro** permite cambiar título, autor, género, páginas, portada, formato y la fecha de lectura. Requiere `supabase/migrations/0007_finished_at.sql`.
 
+## Abandonados
+
+Un libro que estás leyendo se puede pasar a **Abandonados** con "Lo abandoné" (pestaña propia en Mi pila), y desde ahí se puede retomar o devolver a la pila. Al importar de Goodreads, el estante `did-not-finish` se trae como Abandonados (con la opción "Todo"). Requiere `supabase/migrations/0010_abandoned.sql`.
+
 ## Estrellas
 
-Los libros leídos se pueden calificar de 1 a 5 estrellas desde su detalle (tocar la estrella ya marcada la quita), y las estrellas se ven en la tarjeta de Mi pila. Al importar de Goodreads se trae "My Rating" (el 0 de Goodreads es "sin calificar"); volviendo a subir el CSV se completan en los libros que ya estaban. Requiere `supabase/migrations/0009_rating.sql`.
+Los libros leídos se pueden calificar de 1 a 5 estrellas desde su detalle (tocar la estrella ya marcada la quita), y las estrellas se ven en la tarjeta de Mi pila. En la pestaña Leídos se puede filtrar por calificación (5, 4, 3, 2, 1 o sin calificar) y ordenar por más o menos estrellas. Al importar de Goodreads se trae "My Rating" (el 0 de Goodreads es "sin calificar"); volviendo a subir el CSV se completan en los libros que ya estaban. Requiere `supabase/migrations/0009_rating.sql`.
 
 ## Formato en el detalle del libro
 
@@ -92,7 +96,7 @@ El formato es opcional. En Mi pila, los libros sin formato muestran dos botones 
 
 ## Importar desde Goodreads
 
-Desde "Sumá un libro" → "¿Ya tenés una lista en Goodreads? Importala" (`/pila/importar`) se sube el CSV que Goodreads genera en Mis libros → Importación/Exportación. Se puede importar solo "quiero leer" o todo (los estantes `to-read`, `currently-reading` y `read` pasan a Por leer, Leyendo y Leídos). Los "Kindle Edition" y similares quedan como digital; si el archivo no dice el formato, el libro queda sin formato. Cada libro conserva la fecha en que lo agregaste a Goodreads (columna "Date Added"), así el orden por fecha de Mi pila es el de allá. Los libros que ya están en la pila (mismo título y autor) no se duplican; si volvés a subir el archivo, solo se les corrige esa fecha. Los libros del estante "did-not-finish" y los de estantes propios no se importan. Límite: 2 MB y 1000 libros. No necesita migración nueva.
+Desde "Sumá un libro" → "¿Ya tenés una lista en Goodreads? Importala" (`/pila/importar`) se sube el CSV que Goodreads genera en Mis libros → Importación/Exportación. Se puede importar solo "quiero leer" o todo (los estantes `to-read`, `currently-reading` y `read` pasan a Por leer, Leyendo y Leídos). Los "Kindle Edition" y similares quedan como digital; si el archivo no dice el formato, el libro queda sin formato. Cada libro conserva la fecha en que lo agregaste a Goodreads (columna "Date Added"), así el orden por fecha de Mi pila es el de allá. Los libros que ya están en la pila (mismo título y autor) no se duplican; si volvés a subir el archivo, solo se les corrige esa fecha. Los libros de estantes propios no se importan. Límite: 2 MB y 1000 libros. No necesita migración nueva.
 
 ## Progreso de lectura
 

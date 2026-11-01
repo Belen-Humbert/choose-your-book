@@ -11,6 +11,7 @@ const TABS: { status: BookStatus; param: string; label: string }[] = [
   { status: "pendiente", param: "pendiente", label: "Por leer" },
   { status: "leyendo", param: "leyendo", label: "Leyendo" },
   { status: "leido", param: "leido", label: "Leídos" },
+  { status: "abandonado", param: "abandonado", label: "Abandonados" },
 ];
 
 const FORMATS = [
@@ -32,6 +33,10 @@ const EMPTY: Record<BookStatus, { title: string; text: string }> = {
     title: "Todavía no terminaste ninguno",
     text: "Cuando termines un libro, marcalo con “Lo terminé” y queda acá.",
   },
+  abandonado: {
+    title: "No abandonaste ninguno",
+    text: "Si empezás un libro y lo dejás, tocá “Lo abandoné” y queda acá. Siempre podés retomarlo.",
+  },
 };
 
 function buildHref(
@@ -39,12 +44,14 @@ function buildHref(
   formato: string | null,
   q: string,
   orden: Orden,
+  estrellas: string | null = null,
 ) {
   const query = new URLSearchParams();
   if (estado !== "pendiente") query.set("estado", estado);
   if (formato) query.set("formato", formato);
   if (q) query.set("q", q);
   if (orden !== "nuevos") query.set("orden", orden);
+  if (estrellas) query.set("estrellas", estrellas);
   const text = query.toString();
   return text ? `/pila?${text}` : "/pila";
 }
@@ -67,7 +74,14 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
       : null;
 
   const q = (typeof params.q === "string" ? params.q : "").trim().slice(0, 100);
-  const orden: Orden = params.orden === "viejos" ? "viejos" : "nuevos";
+  const ORDENES: Orden[] = ["nuevos", "viejos", "mas-estrellas", "menos-estrellas"];
+  const orden: Orden = ORDENES.find((o) => o === params.orden) ?? "nuevos";
+  // Filtro por estrellas (solo en Leídos): "1" a "5", o "sin" para los sin calificar.
+  const estrellas =
+    tab.status === "leido" && typeof params.estrellas === "string" &&
+    /^([1-5]|sin)$/.test(params.estrellas)
+      ? params.estrellas
+      : null;
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -80,12 +94,15 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
     pendiente: all.filter((b) => b.status === "pendiente").length,
     leyendo: all.filter((b) => b.status === "leyendo").length,
     leido: all.filter((b) => b.status === "leido").length,
+    abandonado: all.filter((b) => b.status === "abandonado").length,
   };
   const books = sortBooks(
     all.filter((book) => {
       if (book.status !== tab.status) return false;
       if (formato === "digital" && !book.has_digital) return false;
       if (formato === "fisico" && !book.has_physical) return false;
+      if (estrellas === "sin" && book.rating) return false;
+      if (estrellas && estrellas !== "sin" && book.rating !== Number(estrellas)) return false;
       return matchesQuery(book, q);
     }),
     orden,
@@ -107,7 +124,9 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
       ? `${books.length} por leer`
       : tab.status === "leyendo"
         ? `${books.length} leyendo`
-        : `${books.length} ${books.length === 1 ? "leído" : "leídos"}`;
+        : tab.status === "abandonado"
+          ? `${books.length} ${books.length === 1 ? "abandonado" : "abandonados"}`
+          : `${books.length} ${books.length === 1 ? "leído" : "leídos"}`;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-5 py-6">
@@ -127,7 +146,7 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
         </p>
       )}
 
-      <nav aria-label="Estado de lectura" className="flex gap-2">
+      <nav aria-label="Estado de lectura" className="flex flex-wrap gap-2">
         {TABS.map((t) => {
           const active = t.status === tab.status;
           return (
@@ -174,22 +193,47 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
           </button>
         </div>
         <div className="flex items-center gap-2 text-sm text-crema-suave">
-          <label htmlFor="orden">
-            {tab.status === "leido"
-              ? "Ordenar por fecha en que lo terminé"
-              : "Ordenar por fecha en que lo agregué"}
-          </label>
+          <label htmlFor="orden">Ordenar</label>
           <select
             id="orden"
             name="orden"
             defaultValue={orden}
             className="h-11 rounded-full border-0 bg-crema px-3 text-sm text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
           >
-            <option value="nuevos">Más nuevos primero</option>
-            <option value="viejos">Más viejos primero</option>
+            <option value="nuevos">
+              {tab.status === "leido" ? "Terminados hace poco primero" : "Agregados hace poco primero"}
+            </option>
+            <option value="viejos">
+              {tab.status === "leido" ? "Terminados hace más tiempo primero" : "Agregados hace más tiempo primero"}
+            </option>
+            {tab.status === "leido" && (
+              <>
+                <option value="mas-estrellas">Más estrellas primero</option>
+                <option value="menos-estrellas">Menos estrellas primero</option>
+              </>
+            )}
           </select>
         </div>
-        {(q || orden !== "nuevos") && (
+        {tab.status === "leido" && (
+          <div className="flex items-center gap-2 text-sm text-crema-suave">
+            <label htmlFor="estrellas">Calificación</label>
+            <select
+              id="estrellas"
+              name="estrellas"
+              defaultValue={estrellas ?? ""}
+              className="h-11 rounded-full border-0 bg-crema px-3 text-sm text-tinta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
+            >
+              <option value="">Todas</option>
+              <option value="5">5 estrellas</option>
+              <option value="4">4 estrellas</option>
+              <option value="3">3 estrellas</option>
+              <option value="2">2 estrellas</option>
+              <option value="1">1 estrella</option>
+              <option value="sin">Sin calificar</option>
+            </select>
+          </div>
+        )}
+        {(q || orden !== "nuevos" || estrellas) && (
           <Link
             href={buildHref(tab.param, formato, "", "nuevos")}
             className="inline-flex min-h-11 items-center self-start text-sm font-bold text-mostaza underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mostaza"
@@ -205,7 +249,7 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
           return (
             <Link
               key={f.label}
-              href={buildHref(tab.param, f.value, q, orden)}
+              href={buildHref(tab.param, f.value, q, orden, estrellas)}
               aria-current={active ? "true" : undefined}
               className={`${chip} ${
                 active
