@@ -92,9 +92,14 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
     tab.status === "leido" ? "terminado" : "agregado",
   );
 
-  // Libros por leer o leyendo a los que les falta género o portada.
+  // Libros de esta pestaña a los que les falta género o portada (en "Por leer" también los que
+  // se están leyendo).
   const incomplete = all
-    .filter((b) => b.status !== "leido" && (!b.genre || !b.cover_url))
+    .filter(
+      (b) =>
+        (b.status === tab.status || (tab.status === "pendiente" && b.status === "leyendo")) &&
+        (!b.genre || !b.cover_url),
+    )
     .map((b) => b.id);
 
   const heading =
@@ -143,9 +148,7 @@ export default async function PilaPage({ searchParams }: PageProps<"/pila">) {
         })}
       </nav>
 
-      {tab.status === "pendiente" && !q && !formato && (
-        <CompletarDatos ids={incomplete} />
-      )}
+      {!q && !formato && <CompletarDatos ids={incomplete} />}
 
       <form role="search" action="/pila" className="flex flex-col gap-2">
         {tab.param !== "pendiente" && <input type="hidden" name="estado" value={tab.param} />}

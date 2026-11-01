@@ -84,7 +84,7 @@ En el detalle de cualquier libro, el formato se elige o se cambia con los mismos
 
 ## Completar género y portada
 
-En "Por leer" (sin búsqueda ni filtro activo), si hay libros por leer o leyendo sin género o sin portada —típicamente los importados de Goodreads— aparece un bloque con el botón **Completar datos**. Los busca de a 6 en Google Books (con Open Library de respaldo), muestra el avance y se puede detener. Solo completa lo que falta (género, páginas, portada), nunca pisa lo que ya tenías, y acepta un resultado solo si el título coincide (y el autor, si los dos lo tienen). Los que no encuentra quedan como estaban y se pueden volver a intentar.
+En cada pestaña de Mi pila (sin búsqueda ni filtro activo), si hay libros sin género o sin portada —típicamente los importados de Goodreads— aparece un bloque con el botón **Completar datos**. Los busca de a 6 en Google Books (con Open Library de respaldo), muestra el avance y se puede detener. Solo completa lo que falta (género, páginas, portada), nunca pisa lo que ya tenías, y acepta un resultado solo si el título coincide (y el autor, si los dos lo tienen). Los que no encuentra quedan como estaban y se pueden volver a intentar.
 
 ## Formato (digital / físico)
 
