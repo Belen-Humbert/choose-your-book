@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
 
@@ -18,6 +18,15 @@ export const metadata: Metadata = {
   title: "Choose Your Book",
   description:
     "Cargá tus lecturas pendientes, filtrá por formato, género y páginas, y dejá que la ruleta elija tu próximo libro.",
+  appleWebApp: {
+    capable: true,
+    title: "Mi pila",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#2f4a3a",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

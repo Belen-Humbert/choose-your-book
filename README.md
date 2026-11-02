@@ -106,9 +106,10 @@ Los libros que estás leyendo muestran una barra con la página actual y el porc
 
 Tocando un libro en Mi pila (o en "Leyendo ahora") se abre su detalle: portada, datos, progreso (si lo estás leyendo) y sus **notas**. Cada nota se guarda con la fecha y la hora, que se muestran en la zona horaria de quien mira la app, y con la página y/o el porcentaje en que ibas al escribirla ("Página 225 · 54%"). Si estás leyendo el libro, la nota se escribe en el panel de Actualizar progreso. Se pueden editar (el lápiz de cada nota cambia el texto y conserva la fecha y la posición; requiere `0008_notes_update.sql`) y borrar. Cada persona ve solo sus notas y solo puede escribir en sus libros. Al quitar un libro se borran también sus notas. Requiere `supabase/migrations/0004_notes.sql`.
 
+## Instalar como app (PWA)
+
+La web se puede instalar en el celular: `src/app/manifest.ts` define el nombre, los colores y los íconos (`public/icons/`, más `src/app/icon.svg` y `src/app/apple-icon.png`). En Android (Chrome): menú ⋮ → "Instalar app". En iPhone (Safari): Compartir → "Agregar a inicio". Se abre a pantalla completa. No hay service worker, así que requiere conexión. El ícono (estante con libros) es un diseño propio; para cambiarlo, reemplazá esos archivos.
+
 ## Próximos pasos
 
-- Importar listas desde un CSV (Goodreads, o Fable con una extensión de terceros)
-- Editar un libro ya cargado
-- PWA
-- Publicar en Vercel
+- Probar el flujo de una persona nueva (login, importar, ruleta)
